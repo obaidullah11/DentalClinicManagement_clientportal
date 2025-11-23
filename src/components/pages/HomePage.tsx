@@ -1,22 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 
 interface HomePageProps {
   onStartBooking: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onStartBooking }) => {
+  const { settings, loading } = useWebsiteSettings();
+  const [logoError, setLogoError] = useState(false);
+
+  // Show loading state only if we don't have settings yet
+  if (loading && !settings) {
+    return (
+      <div className="w-screen h-screen bg-white flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  const headerImageUrl = settings?.header_photo_url || '/images/image-30.png';
+  const logoUrl = settings?.logo_url;
+  const showLogoImage = logoUrl && !logoError;
+
   return (
     <div className="w-screen h-screen bg-white font-sans overflow-hidden">
       <div className="w-full h-full bg-white">
         <div className="w-full h-full relative flex flex-col lg:max-w-[1920px] lg:max-h-[1080px] lg:mx-auto">
-          <div className="w-full h-[220px] lg:h-[220px] bg-cover bg-center bg-no-repeat relative flex-shrink-0" style={{backgroundImage: 'url(/images/image-30.png)'}}>
+          <div 
+            className="w-full h-[220px] lg:h-[220px] bg-cover bg-center bg-no-repeat relative flex-shrink-0" 
+            style={{backgroundImage: `url(${headerImageUrl})`}}
+          >
             <div className="w-full h-full bg-black bg-opacity-50"></div>
           </div>
           <div className="px-4 lg:px-16 py-6 bg-white flex-1 flex flex-col items-start justify-center overflow-hidden">
             <div className="mb-5">
-              <div className="w-16 h-16 bg-cosmo-green rounded-lg p-3 flex items-center justify-center">
-                <div className="w-8 h-8 bg-white rounded"></div>
-              </div>
+              {showLogoImage ? (
+                <img 
+                  src={logoUrl} 
+                  alt="Clinic Logo" 
+                  className="w-16 h-16 object-contain"
+                  onError={() => {
+                    setLogoError(true);
+                  }}
+                />
+              ) : (
+                <div className="w-16 h-16 bg-cosmo-green rounded-lg p-3 flex items-center justify-center">
+                  <div className="w-8 h-8 bg-white rounded"></div>
+                </div>
+              )}
             </div>
             <div className="max-w-full lg:max-w-[550px]">
               <h1 className="text-2xl lg:text-4xl font-bold text-gray-800 leading-tight mb-4">

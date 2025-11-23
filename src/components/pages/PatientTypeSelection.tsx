@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
 import { BookingData } from '../../types/BookingTypes';
+import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 
 interface PatientTypeSelectionProps {
   bookingData: BookingData;
@@ -15,7 +16,22 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
   onNext,
   onBack
 }) => {
+  const { settings } = useWebsiteSettings();
   const [othersText, setOthersText] = useState('');
+
+  // Default procedure choices if API doesn't provide them
+  const defaultChoices = ['Consultation', 'Cleaning', 'Filling (Pasta)', 'X-Ray', 'Extraction', 'Veneers', 'Braces', 'Treatment'];
+  
+  // Get procedure choices from API or use defaults
+  const procedureChoices = useMemo(() => {
+    return settings?.procedure_choices && settings.procedure_choices.length > 0 
+      ? settings.procedure_choices 
+      : defaultChoices;
+  }, [settings?.procedure_choices]);
+
+  // Split into groups for layout: first 6 in 3-column grid, rest in 2-column grid
+  const firstGroup = useMemo(() => procedureChoices.slice(0, 6), [procedureChoices]);
+  const secondGroup = useMemo(() => procedureChoices.slice(6), [procedureChoices]);
 
   const handleOthersChange = (value: string) => {
     setOthersText(value);
@@ -82,36 +98,40 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
                   <h3 className="text-base font-medium text-gray-800 mb-4">
                     Reason for Visit <span className="text-red-500">*</span>
                   </h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-                    {['Consultation', 'Cleaning', 'Filling (Pasta)', 'X-Ray', 'Extraction', 'Veneers'].map((reason) => (
-                      <button 
-                        key={reason} 
-                        onClick={() => updateBookingData('reason', reason)} 
-                        className={`px-4 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                          bookingData.reason === reason 
-                            ? 'bg-cosmo-green text-white shadow-md' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {reason}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    {['Braces', 'Treatment'].map((reason) => (
-                      <button 
-                        key={reason} 
-                        onClick={() => updateBookingData('reason', reason)} 
-                        className={`px-4 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                          bookingData.reason === reason 
-                            ? 'bg-cosmo-green text-white shadow-md' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                      >
-                        {reason}
-                      </button>
-                    ))}
-                  </div>
+                  {firstGroup.length > 0 && (
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
+                      {firstGroup.map((reason) => (
+                        <button 
+                          key={reason} 
+                          onClick={() => updateBookingData('reason', reason)} 
+                          className={`px-4 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                            bookingData.reason === reason 
+                              ? 'bg-cosmo-green text-white shadow-md' 
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {reason}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {secondGroup.length > 0 && (
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      {secondGroup.map((reason) => (
+                        <button 
+                          key={reason} 
+                          onClick={() => updateBookingData('reason', reason)} 
+                          className={`px-4 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                            bookingData.reason === reason 
+                              ? 'bg-cosmo-green text-white shadow-md' 
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {reason}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <div className="mt-4">
                     <label className="block text-sm text-gray-500 mb-2">Others</label>
                     <input 

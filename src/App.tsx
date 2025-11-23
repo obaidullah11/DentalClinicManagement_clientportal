@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BookingData, MedicalHistory } from './types/BookingTypes';
+import { WebsiteSettingsProvider } from './contexts/WebsiteSettingsContext';
 import HomePage from './components/pages/HomePage';
 import PatientTypeSelection from './components/pages/PatientTypeSelection';
 import DateTimeSelection from './components/pages/DateTimeSelection';
@@ -74,74 +75,80 @@ const App: React.FC = () => {
   };
 
   // Render the appropriate component based on current step
-  switch (currentStep) {
-    case 0:
-      return <HomePage onStartBooking={() => setCurrentStep(1)} />;
+  return (
+    <WebsiteSettingsProvider>
+      {(() => {
+        switch (currentStep) {
+          case 0:
+            return <HomePage onStartBooking={() => setCurrentStep(1)} />;
 
-    case 1:
-      return (
-        <PatientTypeSelection
-          bookingData={bookingData}
-          updateBookingData={updateBookingData}
-          onNext={() => setCurrentStep(2)}
-          onBack={() => setCurrentStep(0)}
-        />
-      );
+          case 1:
+            return (
+              <PatientTypeSelection
+                bookingData={bookingData}
+                updateBookingData={updateBookingData}
+                onNext={() => setCurrentStep(2)}
+                onBack={() => setCurrentStep(0)}
+              />
+            );
 
-    case 2:
-      return (
-        <BookingConfirmation
-          bookingData={bookingData}
-          updateBookingData={updateBookingData}
-          onNext={() => setCurrentStep(3)}
-          onBack={() => setCurrentStep(1)}
-        />
-      );
+          case 2:
+            return (
+              <BookingConfirmation
+                bookingData={bookingData}
+                updateBookingData={updateBookingData}
+                onNext={() => setCurrentStep(3)}
+                onBack={() => setCurrentStep(1)}
+              />
+            );
 
-    case 3:
-      return (
-        <DateTimeSelection
-          bookingData={bookingData}
-          updateBookingData={updateBookingData}
-          showCalendar={showCalendar}
-          setShowCalendar={setShowCalendar}
-          onNext={() => setCurrentStep(4)}
-          onChangePatientType={() => setCurrentStep(1)}
-        />
-      );
+          case 3:
+            return (
+              <DateTimeSelection
+                bookingData={bookingData}
+                updateBookingData={updateBookingData}
+                showCalendar={showCalendar}
+                setShowCalendar={setShowCalendar}
+                onNext={() => setCurrentStep(4)}
+                onChangePatientType={() => setCurrentStep(1)}
+              />
+            );
 
-    case 4:
-      return (
-        <PatientDetailsForm
-          bookingData={bookingData}
-          updateBookingData={updateBookingData}
-          onNext={() => setCurrentStep(5)}
-          onChangePatientType={() => setCurrentStep(1)}
-          onChangeDateTime={() => setCurrentStep(3)}
-        />
-      );
+          case 4:
+            return (
+              <PatientDetailsForm
+                bookingData={bookingData}
+                updateBookingData={updateBookingData}
+                onNext={() => setCurrentStep(5)}
+                onChangePatientType={() => setCurrentStep(1)}
+                onChangeDateTime={() => setCurrentStep(3)}
+              />
+            );
 
-    case 5:
-      return (
-        <MedicalHistoryComponent
-          bookingData={bookingData}
-          updateMedicalHistory={updateMedicalHistory}
-          onNext={() => setCurrentStep(6)}
-          onBack={() => setCurrentStep(4)}
-        />
-      );
+          case 5:
+            return (
+              <MedicalHistoryComponent
+                bookingData={bookingData}
+                updateMedicalHistory={updateMedicalHistory}
+                onNext={() => setCurrentStep(6)}
+                onBack={() => setCurrentStep(4)}
+              />
+            );
 
-    case 6:
-      return (
-        <AppointmentConfirmation 
-          bookingData={bookingData}
-          onNext={() => setCurrentStep(0)} 
-        />
-      );
+          case 6:
+            return (
+              <AppointmentConfirmation 
+                bookingData={bookingData}
+                onNext={() => setCurrentStep(0)} 
+              />
+            );
 
-    default:
-      return <HomePage onStartBooking={() => setCurrentStep(1)} />;
-  }
+          default:
+            return <HomePage onStartBooking={() => setCurrentStep(1)} />;
+        }
+      })()}
+    </WebsiteSettingsProvider>
+  );
 };
 
 export default App;
