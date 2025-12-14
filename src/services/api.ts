@@ -177,12 +177,26 @@ async function apiRequest<T>(
     const data = await response.json();
 
     if (!response.ok) {
+      // Log the error for debugging
+      console.error('API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        url,
+        data
+      });
+      
       return {
         success: false,
-        message: data.message || 'An error occurred',
+        message: data.message || `Request failed with status ${response.status}`,
         errors: data.errors,
         error: data.error,
       } as ApiError;
+    }
+
+    // Even if response.ok is true, verify the data structure
+    if (data && typeof data === 'object' && 'success' in data && data.success === false) {
+      console.error('API returned success=false despite 2xx status:', data);
+      return data as ApiError;
     }
 
     return data as ApiSuccessResponse<T>;

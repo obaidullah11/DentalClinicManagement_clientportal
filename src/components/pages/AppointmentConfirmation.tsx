@@ -226,6 +226,32 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
     }
   };
 
+  // Validate conditional fields before submission
+  const validateConditionalFields = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    // Check if prescriptionMedication is Yes but prescriptionSpecify is empty
+    if (bookingData.medicalHistory.prescriptionMedication === 'Yes') {
+      const specify = bookingData.medicalHistory.prescriptionSpecify?.trim();
+      if (!specify) {
+        errors.push('Please specify the prescription/non-prescription medication you are taking');
+      }
+    }
+    
+    // Check if hospitalized is Yes but hospitalizedWhy is empty
+    if (bookingData.medicalHistory.hospitalized === 'Yes') {
+      const why = bookingData.medicalHistory.hospitalizedWhy?.trim();
+      if (!why) {
+        errors.push('Please specify when and why you were hospitalized');
+      }
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
   // Submit appointment on component mount
   useEffect(() => {
     // Prevent double submission (React StrictMode runs effects twice in development)
@@ -245,8 +271,22 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
         setError(null);
         setValidationErrors({});
 
+        // Validate conditional fields first
+        const validation = validateConditionalFields();
+        if (!validation.isValid) {
+          setError('Please complete all required fields');
+          setValidationErrors({
+            'conditional': validation.errors
+          });
+          setLoading(false);
+          return;
+        }
+
         const apiRequest = transformBookingDataToAPI();
+        console.log('Submitting appointment request:', apiRequest);
+        
         const response = await submitAppointment(apiRequest);
+        console.log('Received response:', response);
 
         if (!isMounted) {
           setLoading(false);
@@ -255,8 +295,12 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 
         if (response && response.success === true) {
           // Success response
-          if (response.data && response.data.appointment) {
-            setAppointmentCode(response.data.appointment.appointmentCode || '');
+          if (response.data && response.data.appointment && response.data.appointment.appointmentCode) {
+            setAppointmentCode(response.data.appointment.appointmentCode);
+          } else {
+            // Success flag is true but missing required data
+            console.error('Success response missing appointment data:', response);
+            setError('Appointment submission succeeded but response data is incomplete');
           }
         } else if (response && response.success === false) {
           // Error response
@@ -344,28 +388,41 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
                   {Object.keys(validationErrors).length > 0 && (
                     <div className="text-left bg-red-50 rounded p-4 mb-4">
                       <p className="text-xs font-semibold text-red-800 mb-2">Validation Errors:</p>
-                      <ul className="text-xs text-red-700 space-y-1">
-                        {Object.entries(validationErrors).map(([field, errors]) => (
-                          <li key={field}>
-                            <strong>{field}:</strong> {errors.join(', ')}
-                          </li>
-                        ))}
+                      <ul className="text-xs text-red-700 space-y-1 list-disc list-inside">
+                        {Object.entries(validationErrors).map(([field, errors]) => {
+                          if (Array.isArray(errors)) {
+                            return errors.map((error, idx) => (
+                              <li key={`${field}-${idx}`}>{error}</li>
+                            ));
+                          }
+                          return (
+                            <li key={field}>
+                              <strong>{field}:</strong> {String(errors)}
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   )}
                 </div>
                 <div className="flex justify-center gap-4">
                   <button
-                    onClick={() => window.location.reload()}
+                    onClick={() => {
+                      hasSubmittedRef.current = false;
+                      window.location.reload();
+                    }}
                     className="px-6 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Try Again
                   </button>
                   <button
-                    onClick={onNext}
+                    onClick={() => {
+                      hasSubmittedRef.current = false;
+                      onNext();
+                    }}
                     className="px-6 py-2 bg-cosmo-green text-white rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
                   >
-                    Go Back
+                    Go Back to Edit
                   </button>
                 </div>
               </div>
