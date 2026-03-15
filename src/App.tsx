@@ -8,6 +8,8 @@ import PatientDetailsForm from './components/pages/PatientDetailsForm_new';
 import MedicalHistoryComponent from './components/pages/MedicalHistory';
 import BookingConfirmation from './components/pages/BookingConfirmation';
 import AppointmentConfirmation from './components/pages/AppointmentConfirmation';
+import TermsAndConditions from './components/pages/TermsAndConditions';
+import PrivacyPolicy from './components/pages/PrivacyPolicy';
 
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -109,7 +111,8 @@ const App: React.FC = () => {
                 updateBookingData={updateBookingData}
                 showCalendar={showCalendar}
                 setShowCalendar={setShowCalendar}
-                onNext={() => setCurrentStep(4)}
+                onNext={() => setCurrentStep(bookingData.patientType === 'Existing' ? 6 : 4)}
+                onBack={() => setCurrentStep(bookingData.patientType === 'Existing' ? 1 : 2)}
                 onChangePatientType={() => setCurrentStep(1)}
               />
             );
@@ -137,9 +140,10 @@ const App: React.FC = () => {
 
           case 6:
             return (
-              <AppointmentConfirmation 
+              <AppointmentConfirmation
                 bookingData={bookingData}
-                onNext={() => setCurrentStep(0)} 
+                onNext={() => setCurrentStep(0)}
+                onBack={() => setCurrentStep(3)}
               />
             );
 

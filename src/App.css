@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-body, html {
-  overflow: hidden;
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e8e8e8; 
+    border-radius: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #d4d4d4; 
+  }
+
+  /* Hide scrollbar but keep scrolling functionality */
+  .hide-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }
+

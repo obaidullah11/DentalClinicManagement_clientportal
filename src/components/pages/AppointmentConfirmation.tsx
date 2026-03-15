@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
 import { 
   submitAppointment, 
@@ -10,10 +11,12 @@ import {
 interface AppointmentConfirmationProps {
   bookingData: BookingData;
   onNext: () => void;
+  onBack: () => void;
 }
 
-const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ bookingData, onNext }) => {
+const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ bookingData, onNext, onBack }) => {
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [submitting, setSubmitting] = useState(false);
   const [appointmentCode, setAppointmentCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -226,6 +229,32 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
     }
   };
 
+  // Validate conditional fields before submission
+  const validateConditionalFields = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    // Check if prescriptionMedication is Yes but prescriptionSpecify is empty
+    if (bookingData.medicalHistory.prescriptionMedication === 'Yes') {
+      const specify = bookingData.medicalHistory.prescriptionSpecify?.trim();
+      if (!specify) {
+        errors.push('Please specify the prescription/non-prescription medication you are taking');
+      }
+    }
+    
+    // Check if hospitalized is Yes but hospitalizedWhy is empty
+    if (bookingData.medicalHistory.hospitalized === 'Yes') {
+      const why = bookingData.medicalHistory.hospitalizedWhy?.trim();
+      if (!why) {
+        errors.push('Please specify when and why you were hospitalized');
+      }
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
   // Submit appointment on component mount
   useEffect(() => {
     // Prevent double submission (React StrictMode runs effects twice in development)
@@ -245,8 +274,22 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
         setError(null);
         setValidationErrors({});
 
+        // Validate conditional fields first
+        const validation = validateConditionalFields();
+        if (!validation.isValid) {
+          setError('Please complete all required fields');
+          setValidationErrors({
+            'conditional': validation.errors
+          });
+          setLoading(false);
+          return;
+        }
+
         const apiRequest = transformBookingDataToAPI();
+        console.log('Submitting appointment request:', apiRequest);
+        
         const response = await submitAppointment(apiRequest);
+        console.log('Received response:', response);
 
         if (!isMounted) {
           setLoading(false);
@@ -255,8 +298,12 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 
         if (response && response.success === true) {
           // Success response
-          if (response.data && response.data.appointment) {
-            setAppointmentCode(response.data.appointment.appointmentCode || '');
+          if (response.data && response.data.appointment && response.data.appointment.appointmentCode) {
+            setAppointmentCode(response.data.appointment.appointmentCode);
+          } else {
+            // Success flag is true but missing required data
+            console.error('Success response missing appointment data:', response);
+            setError('Appointment submission succeeded but response data is incomplete');
           }
         } else if (response && response.success === false) {
           // Error response
@@ -294,12 +341,14 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
       isMounted = false;
       abortController.abort();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
   // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-white font-sans">
+        <Header />
         <div className="w-full bg-white">
           <div className="w-full bg-white flex flex-col items-center justify-center p-4 lg:p-8 min-h-screen">
             <div className="w-full max-w-md lg:max-w-lg">
@@ -325,6 +374,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
   if (error) {
     return (
       <div className="min-h-screen bg-white font-sans">
+        <Header />
         <div className="w-full bg-white">
           <div className="w-full bg-white flex flex-col items-center justify-center p-4 lg:p-8 min-h-screen">
             <div className="w-full max-w-md lg:max-w-lg">
@@ -344,28 +394,41 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
                   {Object.keys(validationErrors).length > 0 && (
                     <div className="text-left bg-red-50 rounded p-4 mb-4">
                       <p className="text-xs font-semibold text-red-800 mb-2">Validation Errors:</p>
-                      <ul className="text-xs text-red-700 space-y-1">
-                        {Object.entries(validationErrors).map(([field, errors]) => (
-                          <li key={field}>
-                            <strong>{field}:</strong> {errors.join(', ')}
-                          </li>
-                        ))}
+                      <ul className="text-xs text-red-700 space-y-1 list-disc list-inside">
+                        {Object.entries(validationErrors).map(([field, errors]) => {
+                          if (Array.isArray(errors)) {
+                            return errors.map((error, idx) => (
+                              <li key={`${field}-${idx}`}>{error}</li>
+                            ));
+                          }
+                          return (
+                            <li key={field}>
+                              <strong>{field}:</strong> {String(errors)}
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   )}
                 </div>
                 <div className="flex justify-center gap-4">
                   <button
-                    onClick={() => window.location.reload()}
+                    onClick={() => {
+                      hasSubmittedRef.current = false;
+                      window.location.reload();
+                    }}
                     className="px-6 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     Try Again
                   </button>
                   <button
-                    onClick={onNext}
+                    onClick={() => {
+                      hasSubmittedRef.current = false;
+                      onBack();
+                    }}
                     className="px-6 py-2 bg-cosmo-green text-white rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
                   >
-                    Go Back
+                    Go Back to Edit
                   </button>
                 </div>
               </div>
@@ -378,77 +441,103 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 
   // Success state
   return (
-    <div className="min-h-screen bg-white font-sans">
-      <div className="w-full bg-white">
-        <div className="w-full bg-white flex flex-col items-center justify-center p-4 lg:p-8 min-h-screen">
-          <div className="w-full max-w-md lg:max-w-lg">
-            <div className="text-center mb-8">
-              <h2 className="text-lg font-medium text-gray-800 mb-8">Cosmodental</h2>
-            </div>
-
-            <div className="bg-white border border-gray-200 rounded-lg p-6 lg:p-8 shadow-sm">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-cosmo-green rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-base font-medium text-gray-800 mb-2">
-                  Hi {bookingData.firstName}, we've already
-                </h3>
-                <p className="text-sm text-gray-600">received your request for an appointment!</p>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-800">
-                    {bookingData.lastName}, {bookingData.firstName}
-                  </h4>
-                  <p className="text-xs text-gray-600">
-                    {calculateAge(bookingData.dateOfBirth)} yrs. old • {bookingData.gender}
-                  </p>
-                  <p className="text-xs text-gray-600">{bookingData.patientType} Patient</p>
-                </div>
-
-                <div>
-                  <span className="inline-block bg-cosmo-green text-white text-xs px-2 py-1 rounded">
-                    {bookingData.reason}
-                  </span>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-800">{bookingData.selectedDate}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                    <span className="text-xs text-gray-600">{bookingData.selectedTime}</span>
-                  </div>
-                </div>
-              </div>
-
-              {appointmentCode && (
-                <div className="text-right mb-6">
-                  <p className="text-xs text-gray-600 mb-1">Your appointment code is</p>
-                  <p className="text-lg font-bold text-gray-800">{appointmentCode}</p>
-                </div>
-              )}
-
-              <div className="text-center text-xs text-gray-500 space-y-1">
-                <p>Please be informed that this is NOT YET A</p>
-                <p className="font-medium">CONFIRMED APPOINTMENT</p>
-                <p className="mt-2">A clinic representative will contact you to</p>
-                <p>finalize your visit schedule.</p>
-              </div>
-            </div>
-
-            <div className="flex justify-center mt-8 pb-8">
-              <button
-                onClick={onNext}
-                className="w-full lg:w-auto bg-cosmo-green text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
-              >
-                Continue
-              </button>
+    <div className="min-h-screen bg-white font-sans flex flex-col items-center">
+      <Header />
+      <div className="flex-1 w-full bg-white flex flex-col items-center pt-[80px] pb-[50px]">
+        <div className="w-[880px] h-[620px] bg-white border border-[#d0d5dd] border-solid rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] relative">
+          
+          <div className="absolute left-1/2 -translate-x-1/2 top-[27px] w-[61px] h-[61px] overflow-clip">
+            <div className="absolute inset-[12.5%_12.5%_0.78%_12.5%]">
+               <img src="/images/calendar_new.svg" alt="" className="absolute block max-w-none w-full h-full" />
             </div>
           </div>
+          
+          <div className="absolute left-1/2 -translate-x-1/2 top-[117px] text-center whitespace-nowrap">
+            <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0 not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <span className="leading-[normal]">Hi </span>
+              <span className="font-semibold leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>{bookingData.firstName || 'Timothy'}</span>
+              <span className="leading-[normal]">, we’ve already</span>
+            </p>
+            <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <span className="leading-[normal]">received your request for an appointment</span>
+              <span className="leading-[normal]">!</span>
+            </p>
+          </div>
+
+          {/* Inner box */}
+          <div className="absolute left-[142px] top-[211px] w-[595px] h-[248px] bg-white border border-[#d0d5dd] border-solid rounded-[8px]" />
+
+          {/* Patient Details inside inner box (left part) */}
+          <p className="absolute left-[165px] top-[229px] m-0 text-[#242424] text-[20px] font-bold leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            {bookingData.lastName || 'Miller'}, {bookingData.firstName || 'Timothy'}
+          </p>
+          <p className="absolute left-[165px] top-[263px] m-0 text-[#242424] text-[20px] font-medium leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            {calculateAge(bookingData.dateOfBirth) || '34'} yrs. old - {bookingData.gender || 'Male'}
+          </p>
+          <p className="absolute left-[165px] top-[297px] m-0 text-[#242424] text-[20px] font-medium leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            {bookingData.patientType || 'New'} Patient
+          </p>
+          <p className="absolute left-[165px] top-[332px] m-0 text-[#00b389] text-[16px] font-semibold leading-[normal] tracking-[-0.32px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            {bookingData.reason || 'Consultation'}
+          </p>
+          <p className="absolute left-[165px] top-[366px] m-0 text-[#242424] text-[20px] font-bold leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            {bookingData.selectedDate || 'Today, Oct 02'}
+          </p>
+
+          <div className="absolute left-[165px] top-[402px] overflow-clip w-[18px] h-[18px]">
+             <div className="absolute inset-[8.33%]">
+                <div className="absolute inset-[-5%]">
+                   <img src="/images/clock-4_new.svg" alt="" className="block max-w-none w-full h-full" />
+                </div>
+             </div>
+          </div>
+          <p className="absolute left-[190px] top-[401px] m-0 text-[#242424] text-[15px] font-medium leading-[normal] tracking-[-0.3px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
+             {bookingData.selectedTime || '12:00 PM'}
+          </p>
+
+          {/* Vertical Separator line inside inner box */}
+          <div className="absolute left-[471px] top-[230px] flex items-center justify-center w-0 h-[209px]">
+             <div className="flex-none rotate-90">
+                <div className="relative w-[209px] h-0">
+                   <div className="absolute inset-[-1px_0_0_0]">
+                      <img src="/images/line_1120.svg" alt="" className="block max-w-none w-full h-full" />
+                   </div>
+                </div>
+             </div>
+          </div>
+
+          {/* Appointment code inside inner box (right part) */}
+          <p className="absolute left-[608px] top-[290px] -translate-x-1/2 m-0 text-[#242424] text-[16px] font-normal leading-[normal] text-center whitespace-nowrap not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Your appointment code is
+          </p>
+          <p className="absolute left-[611.5px] top-[328px] -translate-x-1/2 m-0 text-[#242424] text-[24px] font-bold leading-[normal] text-center whitespace-nowrap not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
+            {appointmentCode || 'ABC12346789'}
+          </p>
+
+          <p className="absolute left-1/2 -translate-x-1/2 top-[495px] m-0 w-[400px] h-[43px] text-center text-[#242424] text-[16px] font-medium leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Please be informed that this is NOT YET A CONFIRMED APPOINTMENT. 
+          </p>
+          <p className="absolute left-1/2 -translate-x-1/2 top-[545px] m-0 w-[348px] h-[42px] text-center text-[#242424] text-[16px] font-normal leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
+            A clinic representative will contact you to finalize your visit schedule.
+          </p>
+
+        </div>
+        
+        <div className="flex justify-center mt-[40px] pb-8 w-full gap-4">
+          <button
+            onClick={onBack}
+            className="w-[256px] h-[55px] bg-[#f3f3f3] text-[#242424] text-[16px] font-semibold rounded-[8px] tracking-[-0.32px] hover:bg-gray-200 transition-colors flex items-center justify-center cursor-pointer border-none"
+            style={{ fontFamily: 'Manrope, sans-serif' }}
+          >
+            Back
+          </button>
+          <button
+            onClick={onNext}
+            className="w-[256px] h-[55px] bg-[#00b389] text-[16px] text-white font-semibold rounded-[8px] tracking-[-0.32px] hover:bg-[#009673] transition-colors flex items-center justify-center cursor-pointer border-none"
+            style={{ fontFamily: 'Manrope, sans-serif' }}
+          >
+            Continue
+          </button>
         </div>
       </div>
     </div>

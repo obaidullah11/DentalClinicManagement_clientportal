@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 
-test('renders appointment button', () => {
+test('renders appointment button', async () => {
   render(<App />);
-  const buttonElement = screen.getByText(/I'll make an appointment/i);
-  expect(buttonElement).toBeInTheDocument();
+  await waitFor(() => {
+    const buttonElement = screen.getByText(/I'll make an appointment/i);
+    expect(buttonElement).toBeInTheDocument();
+  });
 });

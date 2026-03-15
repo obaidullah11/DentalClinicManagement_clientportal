@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
+import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
 import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 
@@ -23,15 +24,12 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
   const defaultChoices = ['Consultation', 'Cleaning', 'Filling (Pasta)', 'X-Ray', 'Extraction', 'Veneers', 'Braces', 'Treatment'];
   
   // Get procedure choices from API or use defaults
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const procedureChoices = useMemo(() => {
     return settings?.procedure_choices && settings.procedure_choices.length > 0 
       ? settings.procedure_choices 
       : defaultChoices;
   }, [settings?.procedure_choices]);
-
-  // Split into groups for layout: first 6 in 3-column grid, rest in 2-column grid
-  const firstGroup = useMemo(() => procedureChoices.slice(0, 6), [procedureChoices]);
-  const secondGroup = useMemo(() => procedureChoices.slice(6), [procedureChoices]);
 
   const handleOthersChange = (value: string) => {
     setOthersText(value);
@@ -43,129 +41,112 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
   const isFormValid = () => {
     return bookingData.patientType && (bookingData.reason || othersText.trim());
   };
+
   return (
     <div className="min-h-screen bg-white font-sans">
-      <div className="w-full bg-white">
-        <div className="w-full bg-white flex flex-col lg:flex-row lg:items-start lg:justify-center p-4 lg:p-8 lg:max-w-6xl lg:mx-auto min-h-screen">
-          <div className="flex-1 lg:pr-8 flex flex-col">
-            <div className="mb-6 lg:mb-8 flex-shrink-0">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-lg font-medium text-gray-800">Cosmodental</h2>
-                <button onClick={onBack} className="text-sm text-gray-500 hover:text-gray-700 lg:block">← Back to Home</button>
-              </div>
-              <h1 className="text-xl lg:text-2xl font-bold text-cosmo-green mb-6 lg:mb-8">Book your Appointment</h1>
-            </div>
+      <Header />
 
-            {/* Clinic Info - Mobile Only */}
-            <div className="lg:hidden mb-6 flex-shrink-0">
-              <ClinicInfo />
-            </div>
+      {/* Main content centered */}
+      <div className="w-full flex flex-col items-center pt-[53px] pb-[50px]">
+        {/* Title centered above everything */}
+        <h1 className="text-[24px] font-bold text-[#00b389] mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          Book your Appointment
+        </h1>
 
-            <div className="flex-1 flex flex-col">
-              <div className="mb-6 lg:mb-8 flex-shrink-0">
-                <h3 className="text-base font-medium text-gray-800 mb-4">
-                  Patient Type <span className="text-red-500">*</span>
-                </h3>
-                <div className="flex gap-4">
-                  <button 
-                    onClick={() => updateBookingData('patientType', 'New')} 
-                    className={`flex-1 lg:flex-none px-6 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                      bookingData.patientType === 'New' 
-                        ? 'bg-cosmo-green text-white shadow-md' 
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    New
-                  </button>
-                  <button 
-                    onClick={() => updateBookingData('patientType', 'Existing')} 
-                    className={`flex-1 lg:flex-none px-6 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                      bookingData.patientType === 'Existing' 
-                        ? 'bg-cosmo-green text-white shadow-md' 
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    Existing
-                  </button>
-                </div>
-                {!bookingData.patientType && (
-                  <p className="text-red-500 text-xs mt-2">Please select a patient type</p>
-                )}
-              </div>
-
-              <div className="flex-1 overflow-y-auto">
-                <div className="mb-6 lg:mb-8">
-                  <h3 className="text-base font-medium text-gray-800 mb-4">
-                    Reason for Visit <span className="text-red-500">*</span>
-                  </h3>
-                  {firstGroup.length > 0 && (
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
-                      {firstGroup.map((reason) => (
-                        <button 
-                          key={reason} 
-                          onClick={() => updateBookingData('reason', reason)} 
-                          className={`px-4 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                            bookingData.reason === reason 
-                              ? 'bg-cosmo-green text-white shadow-md' 
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                          }`}
-                        >
-                          {reason}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  {secondGroup.length > 0 && (
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                      {secondGroup.map((reason) => (
-                        <button 
-                          key={reason} 
-                          onClick={() => updateBookingData('reason', reason)} 
-                          className={`px-4 py-3 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                            bookingData.reason === reason 
-                              ? 'bg-cosmo-green text-white shadow-md' 
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                          }`}
-                        >
-                          {reason}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  <div className="mt-4">
-                    <label className="block text-sm text-gray-500 mb-2">Others</label>
-                    <input 
-                      type="text" 
-                      value={othersText}
-                      onChange={(e) => handleOthersChange(e.target.value)}
-                      placeholder="Please specify other reasons..." 
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-cosmo-green focus:border-transparent" 
-                    />
-                  </div>
-                  {!bookingData.reason && !othersText.trim() && (
-                    <p className="text-red-500 text-xs mt-2">Please select a reason for visit or specify in Others</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex-shrink-0 pt-4 pb-8">
+        <div className="w-full max-w-[1241px] flex justify-between items-start px-4 lg:px-0">
+          {/* Left side - Form */}
+          <div className="w-full lg:w-[673px]">
+            <div>
+                {/* Patient Type */}
+                <div className="mb-[42px]">
+              <h3 className="text-[20px] font-bold text-[#242424] mb-[26px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Patient Type
+              </h3>
+              <div className="flex gap-[12px]">
                 <button 
-                  onClick={onNext} 
-                  disabled={!isFormValid()}
-                  className={`w-full px-8 py-3 rounded-md text-sm font-semibold transition-colors ${
-                    isFormValid()
-                      ? 'bg-cosmo-green text-white hover:bg-green-700 cursor-pointer' 
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  onClick={() => updateBookingData('patientType', 'New')} 
+                  className={`rounded-[10px] text-[18px] transition-colors cursor-pointer w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
+                    bookingData.patientType === 'New' 
+                      ? 'bg-[#00b389] text-white font-semibold' 
+                      : 'bg-[#f3f3f3] text-[#242424] font-medium hover:bg-gray-200'
                   }`}
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
-                  Confirm
+                  New
+                </button>
+                <button 
+                  onClick={() => updateBookingData('patientType', 'Existing')} 
+                  className={`rounded-[10px] text-[18px] transition-colors cursor-pointer w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
+                    bookingData.patientType === 'Existing' 
+                      ? 'bg-[#00b389] text-white font-semibold' 
+                      : 'bg-[#f3f3f3] text-[#242424] font-medium hover:bg-gray-200'
+                  }`}
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                >
+                  Existing
                 </button>
               </div>
+              {!bookingData.patientType && (
+                <p className="text-red-500 text-xs mt-2">Please select a patient type</p>
+              )}
+            </div>
+
+            {/* Reason for Visit */}
+            <div className="mb-[28px]">
+              <h3 className="text-[20px] font-bold text-[#242424] mb-[26px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                Reason for Visit <span className="text-red-500">*</span>
+              </h3>
+              <div className="flex flex-wrap gap-x-[12px] gap-y-[12px]">
+                {procedureChoices.map((reason) => (
+                  <button 
+                    key={reason} 
+                    onClick={() => updateBookingData('reason', reason)} 
+                    className={`rounded-[10px] text-[18px] transition-colors cursor-pointer h-[58px] tracking-[-0.36px] flex items-center justify-center px-[20px] whitespace-nowrap ${
+                      bookingData.reason === reason 
+                        ? 'bg-[#00b389] text-white font-semibold' 
+                        : 'bg-[#f3f3f3] text-[#242424] font-medium hover:bg-gray-200'
+                    }`}
+                    style={{ fontFamily: 'Manrope, sans-serif' }}
+                  >
+                    {reason}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-[35px]">
+                <input 
+                  type="text" 
+                  value={othersText}
+                  onChange={(e) => handleOthersChange(e.target.value)}
+                  placeholder="Others" 
+                  className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium focus:outline-none focus:border-[#00b389] h-[55px] text-[#242424] placeholder:text-[#9f9f9f] tracking-[-0.28px]" 
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                />
+              </div>
+              {!bookingData.reason && !othersText.trim() && (
+                <p className="text-red-500 text-xs mt-2">Please select a reason for visit or specify in Others</p>
+              )}
+            </div>
+
+            {/* Confirm Button */}
+            <div className="pt-[30px] pb-8 flex justify-center lg:justify-end gap-[14px]">
+              <button 
+                onClick={onNext} 
+                disabled={!isFormValid()}
+                className={`w-[256px] h-[55px] rounded-[8px] text-[16px] font-semibold transition-colors flex items-center justify-center tracking-[-0.32px] ${
+                  isFormValid()
+                    ? 'bg-[#00b389] text-white hover:bg-[#009673] cursor-pointer' 
+                    : 'bg-[#00b389] text-white opacity-50 cursor-not-allowed'
+                }`}
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
+                Confirm
+              </button>
+            </div>
             </div>
           </div>
 
-          {/* Clinic Info - Desktop Only */}
-          <div className="hidden lg:block flex-shrink-0">
+          {/* Right side - Clinic Info - aligned with Patient Type heading */}
+          <div className="hidden lg:block w-[441px] flex-shrink-0">
             <ClinicInfo />
           </div>
         </div>

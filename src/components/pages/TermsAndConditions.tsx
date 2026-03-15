@@ -1,52 +1,64 @@
 import React from 'react';
 import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
+import Header from '../common/Header';
 
 interface TermsAndConditionsProps {
-  onNext: () => void;
-  onBack: () => void;
+  onNext?: () => void;
+  onBack?: () => void;
 }
 
 const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onNext, onBack }) => {
   const { settings, loading } = useWebsiteSettings();
 
-  const termsContent = settings?.terms_and_conditions || '<p>No terms and conditions available.</p>';
+  const termsContent = settings?.terms_and_conditions || `<p style="margin-bottom: 0;">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.</p><p style="margin-bottom: 0;">&nbsp;</p><p>The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.</p>`;
 
   if (loading && !settings) {
     return (
-      <div className="w-screen h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-[#242424] font-medium" style={{ fontFamily: 'Manrope, sans-serif' }}>Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="w-screen h-screen max-w-[1920px] max-h-[1080px] bg-white font-sans overflow-hidden">
-      <div className="w-full h-full bg-white">
-        <div className="w-full h-full bg-white flex flex-col items-center justify-start p-8 overflow-y-auto">
-          <div className="w-full max-w-4xl">
-            <div className="text-center mb-8">
-              <h2 className="text-lg font-medium text-gray-800 mb-8">Cosmodental</h2>
-              <h1 className="text-2xl font-bold text-cosmo-green mb-12">Terms and Conditions</h1>
-            </div>
+    <div className="min-h-screen bg-white flex flex-col items-center">
+      <Header />
+      <div className="flex-1 w-full bg-white flex flex-col items-center pt-[53px] pb-[100px]">
+        <h1 
+          className="text-[#00b389] text-[24px] font-bold leading-[normal] tracking-[-0.48px] text-center m-0" 
+          style={{ fontFamily: 'Manrope, sans-serif' }}
+        >
+          Terms and Conditions
+        </h1>
 
-            <div 
-              className="text-sm text-gray-700 leading-relaxed space-y-4 mb-8 prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: termsContent }}
-            />
+        <div 
+          className="mt-[47px] w-full max-w-[1288px] text-[#242424] text-[18px] font-medium leading-[30px] tracking-[-0.36px] whitespace-pre-wrap px-4 lg:px-0"
+          style={{ fontFamily: 'Manrope, sans-serif' }}
+          dangerouslySetInnerHTML={{ __html: termsContent }}
+        />
 
-            <div className="flex justify-center gap-4">
+        {(onBack || onNext) && (
+          <div className="flex justify-center gap-4 mt-12 w-full max-w-[1288px]">
+            {onBack && (
               <button
                 onClick={onBack}
                 className="px-6 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 Back
               </button>
-              <button onClick={onNext} className="bg-cosmo-green text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors">
+            )}
+            {onNext && (
+              <button 
+                onClick={onNext} 
+                className="bg-[#00b389] text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
                 Continue
               </button>
-            </div>
+            )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

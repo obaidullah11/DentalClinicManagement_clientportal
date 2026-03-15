@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
+import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
 
 interface BookingConfirmationProps {
@@ -59,68 +60,80 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     }
     setIsDropdownOpen(!isDropdownOpen);
   };
+
+  const isFormValid = () => {
+    return !!bookingData.howDidYouKnow;
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans">
-      <div className="w-full bg-white">
-        <div className="w-full bg-white flex flex-col lg:flex-row lg:items-start lg:justify-center p-4 lg:p-8 lg:max-w-6xl lg:mx-auto min-h-screen">
-          <div className="flex-1 lg:pr-8 flex flex-col">
-            <div className="mb-6 lg:mb-8 flex-shrink-0">
-              <h2 className="text-lg font-medium text-gray-800 mb-2">Cosmodental</h2>
-              <h1 className="text-xl lg:text-2xl font-bold text-cosmo-green mb-6 lg:mb-8">Book your Appointment</h1>
-            </div>
+      <Header />
+      <div className="w-full flex flex-col items-center pt-[53px] pb-[50px]">
+        <h1 className="text-[24px] font-bold text-[#00b389] mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          Book your Appointment
+        </h1>
 
+        <div className="w-full max-w-[1241px] flex justify-between items-start px-4 lg:px-0">
+          <div className="w-full lg:w-[673px]">
             {/* Clinic Info - Mobile Only */}
-            <div className="lg:hidden mb-6 flex-shrink-0">
+            <div className="lg:hidden mb-[53px] flex-shrink-0">
               <ClinicInfo />
             </div>
-            
-            <div className="flex-1 overflow-y-auto">
-              <div className="mb-6 lg:mb-8">
-                <h3 className="text-base font-medium text-gray-800 mb-4">Patient Type</h3>
-                <div className="flex gap-4">
-                  <button 
-                    className={`px-6 py-2 rounded-md text-sm font-medium ${
-                      bookingData.patientType === 'New' 
-                        ? 'bg-cosmo-green text-white' 
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
+
+            <div>
+              <div className="mb-[30px]">
+                <h3 className="text-[20px] font-bold text-[#242424] mb-[26px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  Patient Type
+                </h3>
+                <div className="flex gap-[12px]">
+                  <div className={`rounded-[10px] text-[18px] transition-colors w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
+                    bookingData.patientType === 'New' 
+                      ? 'bg-[#00b389] text-white font-semibold' 
+                      : 'bg-[#f3f3f3] text-[#242424] font-medium'
+                  }`} style={{ fontFamily: 'Manrope, sans-serif' }}>
                     New
-                  </button>
-                  <button 
-                    className={`px-6 py-2 rounded-md text-sm font-medium ${
-                      bookingData.patientType === 'Existing' 
-                        ? 'bg-cosmo-green text-white' 
-                        : 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
+                  </div>
+                  <div className={`rounded-[10px] text-[18px] transition-colors w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
+                    bookingData.patientType === 'Existing' 
+                      ? 'bg-[#00b389] text-white font-semibold' 
+                      : 'bg-[#f3f3f3] text-[#242424] font-medium'
+                  }`} style={{ fontFamily: 'Manrope, sans-serif' }}>
                     Existing
-                  </button>
+                  </div>
                 </div>
               </div>
               
-              <div className="mb-6 lg:mb-8">
-                <h3 className="text-base font-medium text-gray-800 mb-4">Reason for Visit</h3>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
-                  <span className="text-sm text-gray-700">{bookingData.reason || 'Consultation'}</span>
-                  <button onClick={onBack} className="text-sm text-cosmo-green hover:underline ml-auto">Change</button>
+              <div className="mb-[30px]">
+                <h3 className="text-[20px] font-bold text-[#242424] mb-[26px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  Reason for Visit
+                </h3>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <img src="/images/file-check-2.svg" alt="Check" className="w-[18px] h-[18px]" />
+                    <span className="text-[18px] font-medium text-[#242424] tracking-[-0.36px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{bookingData.reason || 'Consultation'}</span>
+                  </div>
+                  <button onClick={onBack} className="text-[14px] font-semibold text-[#242424] underline tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Change</button>
                 </div>
               </div>
               
-              <div className="mb-6 lg:mb-8">
-                <h3 className="text-base font-medium text-gray-800 mb-4">How Did you know about Cosmodental?</h3>
+              <div className="border-b border-[#bfbfbf] border-dashed mb-[30px]"></div>
+              
+              <div className="mb-[30px]">
+                <h3 className="text-[20px] font-bold text-[#242424] mb-[15px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  How Did you know about Cosmodental? <span className="text-red-500">*</span>
+                </h3>
                 <div className="relative" ref={dropdownRef}>
                   <button
                     type="button"
                     onClick={handleDropdownToggle}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm mb-4 text-left bg-white flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-cosmo-green focus:border-transparent"
+                    className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] text-left bg-white flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-[#00b389] focus:border-[#00b389] tracking-[-0.28px]"
+                    style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
-                    <span className={bookingData.howDidYouKnow ? 'text-gray-900' : 'text-gray-500'}>
+                    <span className={bookingData.howDidYouKnow ? 'text-[#242424]' : 'text-[#9f9f9f]'}>
                       {bookingData.howDidYouKnow || 'Choose your answer'}
                     </span>
                     <svg
-                      className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+                      className={`w-4 h-4 transition-transform text-[#242424] ${isDropdownOpen ? 'rotate-180' : ''}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -130,7 +143,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                   </button>
                   
                   {isDropdownOpen && (
-                    <div className={`absolute z-50 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto left-0 right-0 ${
+                    <div className={`absolute z-50 w-full bg-white border border-[#e8e8e8] rounded-[8px] shadow-lg max-h-[240px] overflow-y-auto left-0 right-0 ${
                       dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1'
                     }`}>
                       {options.map((option) => (
@@ -138,9 +151,10 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                           key={option}
                           type="button"
                           onClick={() => handleOptionSelect(option)}
-                          className={`w-full px-3 py-2 text-left text-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors ${
-                            bookingData.howDidYouKnow === option ? 'bg-blue-50 text-blue-700' : 'text-gray-900'
+                          className={`w-full px-[20px] py-[12px] text-left text-[14px] font-medium hover:bg-[#f3f3f3] focus:outline-none transition-colors tracking-[-0.28px] ${
+                            bookingData.howDidYouKnow === option ? 'bg-[#f3f3f3] text-[#242424]' : 'text-[#242424]'
                           }`}
+                          style={{ fontFamily: 'Manrope, sans-serif' }}
                         >
                           {option}
                         </button>
@@ -150,39 +164,43 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                 </div>
               </div>
               
-              <div className="mb-6 lg:mb-8">
-                <h3 className="text-base font-medium text-gray-800 mb-4">
-                  Note <span className="text-sm text-gray-500">(Preferred Dentist or Special Requests)</span>
+              <div className="mb-[30px]">
+                <h3 className="text-[20px] font-bold text-[#242424] mb-[15px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  Note <span className="text-[14px] font-normal text-[#9f9f9f] tracking-[-0.28px]">(Preferred Dentist or Special Requests)</span>
                 </h3>
                 <textarea 
                   value={bookingData.notes} 
                   onChange={(e) => updateBookingData('notes', e.target.value)} 
-                  placeholder="Notes..." 
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm h-20 resize-none"
+                  placeholder="Write..." 
+                  className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] resize-none focus:outline-none focus:border-[#00b389] tracking-[-0.28px] placeholder:text-[#9f9f9f]"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 ></textarea>
               </div>
             </div>
-            
-            <div className="flex-shrink-0 pt-4 pb-8">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <button 
-                  onClick={onBack} 
-                  className="w-full lg:w-auto px-6 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  Back
-                </button>
-                <button 
-                  onClick={onNext} 
-                  className="w-full lg:w-auto bg-cosmo-green text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
-                >
-                  Next
-                </button>
-              </div>
+
+            <div className="pt-[30px] pb-[50px] flex justify-center lg:justify-start gap-[14px]">
+              <button 
+                onClick={onBack} 
+                className="w-[256px] h-[55px] bg-[#f3f3f3] text-[#242424] rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] hover:bg-gray-200 transition-colors flex items-center justify-center"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
+                Back
+              </button>
+              <button 
+                onClick={onNext} 
+                disabled={!isFormValid()}
+                className={`w-[256px] h-[55px] text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] transition-colors flex items-center justify-center ${
+                  isFormValid() ? 'bg-[#00b389] hover:bg-[#009673]' : 'bg-[#00b389] opacity-50 cursor-not-allowed'
+                }`}
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
+                Next
+              </button>
             </div>
           </div>
 
           {/* Clinic Info - Desktop Only */}
-          <div className="hidden lg:block flex-shrink-0">
+          <div className="hidden lg:block w-[441px] flex-shrink-0">
             <ClinicInfo />
           </div>
         </div>

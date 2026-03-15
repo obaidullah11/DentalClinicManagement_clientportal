@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "Code Quality Reviewer",
+  "description": "Analyzes modified source code for improvements including code smells, design patterns, best practices, Figma design compliance, and potential security or memory leak issues",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.ts",
+      "*.tsx",
+      "*.js",
+      "*.jsx",
+      "*.css"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Analyze the modified code in the edited file for:\n\n1. Figma Design Compliance: Verify button sizes, page dimensions, and layout match the Figma design specifications exactly - do not assume or deviate\n2. Code Quality: Identify code smells, suggest design patterns, and recommend best practices\n3. Readability & Maintainability: Suggest improvements for code clarity and long-term maintenance\n4. Performance: Identify potential performance optimizations\n5. Security & Memory: Check for security vulnerabilities and memory leak risks\n6. Rational Assessment: Evaluate if changes could introduce problems or regressions\n\nProvide specific, actionable suggestions while maintaining existing functionality. Think critically about long-term implications."
+  },
+  "workspaceFolderName": "DentalClinicManagement_clientportal",
+  "shortName": "code-quality-reviewer"
+}

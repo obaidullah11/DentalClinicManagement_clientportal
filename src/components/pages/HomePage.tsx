@@ -23,47 +23,42 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBooking }) => {
   const showLogoImage = logoUrl && !logoError;
 
   return (
-    <div className="w-screen h-screen bg-white font-sans overflow-hidden">
-      <div className="w-full h-full bg-white">
-        <div className="w-full h-full relative flex flex-col lg:max-w-[1920px] lg:max-h-[1080px] lg:mx-auto">
-          <div 
-            className="w-full h-[220px] lg:h-[220px] bg-cover bg-center bg-no-repeat relative flex-shrink-0" 
-            style={{backgroundImage: `url(${headerImageUrl})`}}
-          >
-            <div className="w-full h-full bg-black bg-opacity-50"></div>
+    <div className="w-screen min-h-screen bg-white font-sans overflow-x-hidden">
+      <div className="w-full flex flex-col items-center">
+        <div 
+          className="w-full h-[310px] bg-cover bg-center bg-no-repeat relative flex-shrink-0" 
+          style={{backgroundImage: `url(${headerImageUrl})`}}
+        >
+          <div className="w-full h-full bg-black bg-opacity-50"></div>
+        </div>
+        
+        <div className="w-full max-w-[1242px] px-4 lg:px-0 relative">
+          {/* Logo overlapping the image */}
+          <div className="absolute top-[-68px]">
+            <div className="w-[126px] h-[126px] bg-[#00b389] rounded-[16.8px] flex items-center justify-center p-2">
+              <img 
+                src={showLogoImage ? logoUrl : "/images/cosmo-dental-logo-1.png"}
+                alt="Cosmo Dental Logo"
+                className="w-[84.67px] h-[91.89px] object-contain"
+                onError={() => setLogoError(true)}
+              />
+            </div>
           </div>
-          <div className="px-4 lg:px-16 py-6 bg-white flex-1 flex flex-col items-start justify-center overflow-hidden">
-            <div className="mb-5">
-              {showLogoImage ? (
-                <img 
-                  src={logoUrl} 
-                  alt="Clinic Logo" 
-                  className="w-16 h-16 object-contain"
-                  onError={() => {
-                    setLogoError(true);
-                  }}
-                />
-              ) : (
-                <div className="w-16 h-16 bg-cosmo-green rounded-lg p-3 flex items-center justify-center">
-                  <div className="w-8 h-8 bg-white rounded"></div>
-                </div>
-              )}
-            </div>
-            <div className="max-w-full lg:max-w-[550px]">
-              <h1 className="text-2xl lg:text-4xl font-bold text-gray-800 leading-tight mb-4">
-                Book your appointment at<br className="hidden lg:block" />
-                <span className="lg:hidden"> </span>Cosmodental today!
-              </h1>
-              <p className="text-sm text-gray-600 leading-relaxed mb-5">
-                Take the wait out of enjoying your Cosmodental treatment, book your appointment in advance for a smooth and hassle-free dental experience!
-              </p>
-              <button 
-                onClick={onStartBooking} 
-                className="w-full lg:w-auto bg-cosmo-green text-white border-none rounded-md px-6 py-3 text-sm font-semibold cursor-pointer transition-colors duration-200 hover:bg-green-700"
-              >
-                I'll make an appointment
-              </button>
-            </div>
+
+          <div className="pt-[90px] pb-[50px]">
+            <h1 className="text-[42px] font-bold text-[#242424] leading-[43px] tracking-[-0.84px] mb-[8px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Book your appointment at<br />Cosmodental today!
+            </h1>
+            <p className="text-[16px] font-normal text-[rgba(0,0,0,0.6)] leading-[normal] tracking-[-0.32px] mb-[47px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              Skip the wait and enjoy your Cosmodental treatments. Book your appointment<br />in advance for a smooth and hassle-free dental experience!
+            </p>
+            <button 
+              onClick={onStartBooking} 
+              className="w-[343px] h-[58px] bg-[#00b389] text-white border-none rounded-[10px] text-[16px] font-bold tracking-[-0.32px] cursor-pointer transition-colors duration-200 hover:bg-[#009673]"
+              style={{ fontFamily: 'Manrope, sans-serif' }}
+            >
+              I'll make an appointment
+            </button>
           </div>
         </div>
       </div>

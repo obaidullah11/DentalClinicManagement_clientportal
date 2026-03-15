@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
+import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
 
 interface DateTimeSelectionProps {
@@ -8,6 +9,7 @@ interface DateTimeSelectionProps {
   showCalendar: boolean;
   setShowCalendar: (show: boolean) => void;
   onNext: () => void;
+  onBack: () => void;
   onChangePatientType: () => void;
 }
 
@@ -17,6 +19,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   showCalendar,
   setShowCalendar,
   onNext,
+  onBack,
   onChangePatientType
 }) => {
   const [currentMonth, setCurrentMonth] = useState(9); // October (0-indexed)
@@ -131,37 +134,37 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      <div className="w-full bg-white">
-        <div className="w-full bg-white flex flex-col lg:flex-row lg:items-start lg:justify-center p-4 lg:p-8 lg:max-w-6xl lg:mx-auto min-h-screen">
-          <div className="flex-1 lg:pr-8 flex flex-col">
-            <div className="mb-6 lg:mb-8 flex-shrink-0">
-              <h2 className="text-lg font-medium text-gray-800 mb-2">Cosmodental</h2>
-              <h1 className="text-xl lg:text-2xl font-bold text-cosmo-green mb-6 lg:mb-8">Book your Appointment</h1>
-            </div>
+      <Header />
+      <div className="w-full flex flex-col items-center pt-[53px] pb-[50px]">
+        <h1 className="text-[24px] font-bold text-[#00b389] mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          Book your Appointment
+        </h1>
 
+        <div className="w-full max-w-[1241px] flex justify-between items-start px-4 lg:px-0">
+          <div className="w-full lg:w-[737px]">
             {/* Clinic Info - Mobile Only */}
             <div className="lg:hidden mb-6 flex-shrink-0">
               <ClinicInfo />
             </div>
-            
-            <div className="flex-1 flex flex-col">
-              <div className="mb-6 flex-shrink-0">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-base font-medium text-gray-800">{bookingData.patientType} Patient</span>
-                  <button onClick={onChangePatientType} className="text-sm text-cosmo-green hover:underline">Change</button>
+
+            <div>
+              <div className="mb-[30px] flex-shrink-0 border-b border-[#bfbfbf] border-dashed pb-[20px]">
+                <div className="flex items-center justify-between mb-[10px]">
+                  <span className="text-[20px] font-bold text-[#242424] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{bookingData.patientType} Patient</span>
+                  <button onClick={onChangePatientType} className="text-[14px] font-semibold text-[#242424] underline tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Change</button>
                 </div>
-                <span className="text-sm text-gray-600">{bookingData.reason}</span>
+                <span className="text-[14px] font-normal text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{bookingData.reason}</span>
               </div>
               
-              <div className="mb-6 flex-shrink-0">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-base font-medium text-gray-800">
+              <div className="mb-[30px] flex-shrink-0 mt-2">
+                <div className="flex items-center justify-between mb-[16px]">
+                  <span className="text-[20px] font-bold text-[#242424] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
                     {selectedDate === 2 && selectedMonth === 9 && selectedYear === 2025 
                       ? 'Today, October 2' 
                       : `${months[selectedMonth]} ${selectedDate}, ${selectedYear}`}
                   </span>
                   <div className="flex items-center gap-4">
-                    <button onClick={() => setShowCalendar(!showCalendar)} className="px-4 lg:px-6 py-2 border border-gray-300 rounded-full text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <button onClick={() => setShowCalendar(!showCalendar)} className="w-[116px] h-[33px] border border-[#bfbfbf] rounded-[6px] text-[13px] text-black hover:bg-gray-50 transition-colors flex items-center justify-center tracking-[-0.26px]" style={{ fontFamily: 'Inter, sans-serif' }}>
                       See Calendar
                     </button>
                     <div className="hidden lg:flex items-center gap-2">
@@ -172,70 +175,58 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                 </div>
               </div>
               
-              <div className="mb-6 flex-shrink-0">
-                <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+              <div className="mb-[40px] flex-shrink-0">
+                <div className="flex gap-[11px] overflow-x-auto pb-2">
                   {generateDateButtons().map((button, index) => (
                     <button 
                       key={index}
                       onClick={() => handleDateButtonClick(button.fullDate)}
-                      className={`px-3 lg:px-4 py-2 rounded-md text-center transition-colors flex-shrink-0 ${
+                      className={`w-[95px] h-[83px] rounded-[8px] text-center transition-colors flex-shrink-0 flex flex-col items-center justify-center ${
                         button.isSelected 
-                          ? 'bg-cosmo-green text-white' 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? 'bg-[#00b389] text-white' 
+                          : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                       }`}
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
-                      <div className="text-xs">{button.day}</div>
-                      <div className="text-sm font-medium">{String(button.date).padStart(2, '0')}</div>
+                      <div className="text-[16px] font-bold tracking-[-0.32px]">{button.day}</div>
+                      <div className="text-[16px] font-bold tracking-[-0.32px]">{String(button.date).padStart(2, '0')}</div>
                     </button>
                   ))}
                 </div>
               </div>
               
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1">
                 <div className="mb-6">
-                  <h3 className="text-sm font-medium text-gray-800 mb-3">Morning</h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                  <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Morning</h3>
+                  <div className="flex flex-wrap gap-[12px] mb-[40px]">
                     {['9:00 AM', '9:45 AM', '10:00 AM', '10:45 AM'].map((time) => (
                       <button 
                         key={time} 
                         onClick={() => updateBookingData('selectedTime', time)} 
-                        className={`px-4 py-3 rounded-md text-sm transition-colors ${
+                        className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
                           bookingData.selectedTime === time 
-                            ? 'bg-cosmo-green text-white' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-[#00b389] text-white' 
+                            : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                         }`}
+                        style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         {time}
                       </button>
                     ))}
                   </div>
                   
-                  <h3 className="text-sm font-medium text-gray-800 mb-3">Afternoon</h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                    {['12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM', '02:00 PM'].map((time) => (
+                  <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Afternoon</h3>
+                  <div className="flex flex-wrap gap-[12px] mb-4">
+                    {['12:00 PM', '12:45 PM', '01:00 PM', '01:45 PM', '02:00 PM', '02:45 PM', '03:00 PM'].map((time) => (
                       <button 
                         key={time} 
                         onClick={() => updateBookingData('selectedTime', time)} 
-                        className={`px-4 py-3 rounded-md text-sm transition-colors ${
+                        className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
                           bookingData.selectedTime === time 
-                            ? 'bg-cosmo-green text-white' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-[#00b389] text-white' 
+                            : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                         }`}
-                      >
-                        {time}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 mb-6">
-                    {['02:30 PM', '03:00 PM'].map((time) => (
-                      <button 
-                        key={time} 
-                        onClick={() => updateBookingData('selectedTime', time)} 
-                        className={`px-4 py-3 rounded-md text-sm transition-colors ${
-                          bookingData.selectedTime === time 
-                            ? 'bg-cosmo-green text-white' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
+                        style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         {time}
                       </button>
@@ -243,16 +234,29 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div className="flex-shrink-0 pt-4 pb-8">
+            <div className="pt-[30px] pb-[50px] flex justify-center lg:justify-start gap-[14px]">
+                <button
+                  onClick={onBack}
+                  className="w-[256px] h-[55px] bg-[#f3f3f3] text-[#242424] rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] hover:bg-gray-200 transition-colors flex items-center justify-center cursor-pointer"
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
+                >
+                  Back
+                </button>
                 <button 
                   onClick={onNext} 
-                  className="w-full bg-cosmo-green text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
+                  disabled={!bookingData.selectedTime || !bookingData.selectedDate}
+                  className={`w-[256px] h-[55px] text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] transition-colors flex items-center justify-center ${
+                    bookingData.selectedTime && bookingData.selectedDate
+                      ? 'bg-[#00b389] hover:bg-[#009673] cursor-pointer'
+                      : 'bg-[#00b389] opacity-50 cursor-not-allowed'
+                  }`}
+                  style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   Continue
                 </button>
               </div>
-            </div>
 
             {/* Calendar popup - Full width modal at bottom */}
             {showCalendar && (
@@ -268,7 +272,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                         >
                           ‹
                         </button>
-                        <h3 className="text-sm font-medium text-gray-800 min-w-[120px] text-center">
+                        <h3 className="text-[16px] font-bold text-[#242424] min-w-[120px] text-center tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
                           {months[currentMonth]} {currentYear}
                         </h3>
                         <button 
@@ -281,10 +285,10 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                     </div>
                     
                     {/* Calendar grid */}
-                    <div className="flex-1 flex flex-col justify-center max-w-sm mx-auto w-full">
+                    <div className="flex-1 flex flex-col justify-center max-w-[400px] mx-auto w-full">
                       <div className="grid grid-cols-7 gap-2 mb-2">
-                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day) => (
-                          <div key={day} className="text-center text-xs text-gray-500 py-1 font-medium">{day}</div>
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                          <div key={day} className="text-center text-[12px] text-[#9f9f9f] py-1 font-medium tracking-[-0.24px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{day}</div>
                         ))}
                       </div>
                       <div className="grid grid-cols-7 gap-2">
@@ -296,7 +300,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                     <div className="flex justify-center gap-4 mt-4 pb-4">
                       <button 
                         onClick={() => setShowCalendar(false)} 
-                        className="px-8 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        className="px-8 py-2 border border-[#e8e8e8] rounded-md text-[14px] text-[#242424] font-semibold hover:bg-gray-50 transition-colors tracking-[-0.28px]"
+                        style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         Cancel
                       </button>
@@ -308,7 +313,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                           updateBookingData('selectedDate', `${monthName} ${selectedDate}, ${currentYear}`);
                           setShowCalendar(false);
                         }} 
-                        className="bg-cosmo-green text-white px-8 py-2 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
+                        className="bg-[#00b389] text-white px-8 py-2 rounded-md text-[14px] font-semibold tracking-[-0.28px] hover:bg-[#009673] transition-colors"
+                        style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         Confirm
                       </button>
@@ -320,7 +326,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
           </div>
 
           {/* Clinic Info - Desktop Only */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block w-[441px] flex-shrink-0">
             <ClinicInfo />
           </div>
         </div>
