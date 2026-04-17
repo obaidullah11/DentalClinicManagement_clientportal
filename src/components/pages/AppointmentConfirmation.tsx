@@ -23,11 +23,6 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
   const hasSubmittedRef = useRef(false);
 
-  // Reset hasSubmittedRef when component mounts (for new appointments)
-  useEffect(() => {
-    hasSubmittedRef.current = false;
-  }, []);
-
   // Calculate age from date of birth
   const calculateAge = (dateOfBirth: string) => {
     if (!dateOfBirth) return '';

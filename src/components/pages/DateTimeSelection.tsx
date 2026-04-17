@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
 import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
+
+interface ClinicSettings {
+  clinic_name: string;
+  clinic_hours_start: string;
+  clinic_hours_end: string;
+  clinic_days: string[];
+}
 
 interface DateTimeSelectionProps {
   bookingData: BookingData;
@@ -30,6 +37,98 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
   const [error, setError] = useState<string>('');
+  const [clinicSettings, setClinicSettings] = useState<ClinicSettings | null>(null);
+  const [timeSlots, setTimeSlots] = useState<{ morning: string[], afternoon: string[] }>({ morning: [], afternoon: [] });
+  const [isClinicClosed, setIsClinicClosed] = useState(false);
+
+  // Fetch clinic settings on mount
+  useEffect(() => {
+    fetchClinicSettings();
+  }, []);
+
+  // Generate time slots when clinic settings are loaded or date changes
+  useEffect(() => {
+    if (clinicSettings) {
+      console.log('Date changed:', { selectedDate, selectedMonth, selectedYear });
+      console.log('Clinic settings:', clinicSettings);
+      
+      // Check if clinic is open and generate slots in one go
+      const date = new Date(selectedYear, selectedMonth, selectedDate);
+      const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+      const dayOfWeek = dayNames[date.getDay()];
+      const isOpen = clinicSettings.clinic_days.includes(dayOfWeek);
+      
+      console.log('Day of week:', dayOfWeek, 'Is open:', isOpen);
+      
+      setIsClinicClosed(!isOpen);
+      
+      if (!isOpen) {
+        console.log('Clinic is closed on this day');
+        setTimeSlots({ morning: [], afternoon: [] });
+        updateBookingData('selectedTime', '');
+        return;
+      }
+      
+      // Generate time slots
+      const { clinic_hours_start, clinic_hours_end } = clinicSettings;
+
+      const parseTime = (timeStr: string): { hours: number, minutes: number } => {
+        const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+        if (!match) return { hours: 0, minutes: 0 };
+
+        let hours = parseInt(match[1]);
+        const minutes = parseInt(match[2]);
+        const period = match[3].toUpperCase();
+
+        if (period === 'PM' && hours !== 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+
+        return { hours, minutes };
+      };
+
+      const start = parseTime(clinic_hours_start);
+      const end = parseTime(clinic_hours_end);
+
+      const slots: string[] = [];
+      let currentHour = start.hours;
+      let currentMinute = start.minutes;
+
+      while (currentHour < end.hours || (currentHour === end.hours && currentMinute <= end.minutes)) {
+        const hour12 = currentHour === 0 ? 12 : currentHour > 12 ? currentHour - 12 : currentHour;
+        const ampm = currentHour < 12 ? 'AM' : 'PM';
+        const timeStr = `${hour12}:${currentMinute.toString().padStart(2, '0')} ${ampm}`;
+        slots.push(timeStr);
+
+        currentMinute += 30;
+        if (currentMinute >= 60) {
+          currentMinute = 0;
+          currentHour += 1;
+        }
+      }
+
+      const morning = slots.filter(slot => {
+        const isPM = slot.includes('PM');
+        const hour = parseInt(slot.split(':')[0]);
+        return !isPM || (isPM && hour === 12);
+      });
+      const afternoon = slots.filter(slot => !morning.includes(slot));
+
+      console.log('Generated slots - Morning:', morning.length, 'Afternoon:', afternoon.length);
+      setTimeSlots({ morning, afternoon });
+    }
+  }, [clinicSettings, selectedDate, selectedMonth, selectedYear]);
+
+  const fetchClinicSettings = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/public/document-settings');
+      const result = await response.json();
+      if (result.success && result.data?.clinic) {
+        setClinicSettings(result.data.clinic);
+      }
+    } catch (error) {
+      console.error('Failed to fetch clinic settings:', error);
+    }
+  };
 
   const validateAppointmentDate = (dateStr: string): boolean => {
     setError('');
@@ -269,49 +368,72 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
               </div>
               
               <div className="flex-1">
-                <div className="mb-6">
-                  <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Morning</h3>
-                  <div className="flex flex-wrap gap-[12px] mb-[40px]">
-                    {['9:00 AM', '9:45 AM', '10:00 AM', '10:45 AM'].map((time) => (
-                      <button 
-                        key={time} 
-                        onClick={() => {
-                          updateBookingData('selectedTime', time);
-                          setError(''); // Clear error when time is selected
-                        }} 
-                        className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
-                          bookingData.selectedTime === time 
-                            ? 'bg-cosmo-green text-white' 
-                            : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
-                        }`}
-                        style={{ fontFamily: 'Manrope, sans-serif' }}
-                      >
-                        {time}
-                      </button>
-                    ))}
+                {isClinicClosed ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-gray-400 mb-2">Clinic is Closed</div>
+                      <div className="text-sm text-gray-500">The clinic is not open on this day. Please select another date.</div>
+                    </div>
                   </div>
-                  
-                  <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Afternoon</h3>
-                  <div className="flex flex-wrap gap-[12px] mb-4">
-                    {['12:00 PM', '12:45 PM', '01:00 PM', '01:45 PM', '02:00 PM', '02:45 PM', '03:00 PM'].map((time) => (
-                      <button 
-                        key={time} 
-                        onClick={() => {
-                          updateBookingData('selectedTime', time);
-                          setError(''); // Clear error when time is selected
-                        }} 
-                        className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
-                          bookingData.selectedTime === time 
-                            ? 'bg-cosmo-green text-white' 
-                            : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
-                        }`}
-                        style={{ fontFamily: 'Manrope, sans-serif' }}
-                      >
-                        {time}
-                      </button>
-                    ))}
+                ) : (
+                  <div className="mb-6">
+                    {timeSlots.morning.length > 0 && (
+                      <>
+                        <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Morning</h3>
+                        <div className="flex flex-wrap gap-[12px] mb-[40px]">
+                          {timeSlots.morning.map((time) => (
+                            <button 
+                              key={time} 
+                              onClick={() => {
+                                updateBookingData('selectedTime', time);
+                                setError('');
+                              }} 
+                              className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
+                                bookingData.selectedTime === time 
+                                  ? 'bg-cosmo-green text-white' 
+                                  : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
+                              }`}
+                              style={{ fontFamily: 'Manrope, sans-serif' }}
+                            >
+                              {time}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    
+                    {timeSlots.afternoon.length > 0 && (
+                      <>
+                        <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Afternoon</h3>
+                        <div className="flex flex-wrap gap-[12px] mb-4">
+                          {timeSlots.afternoon.map((time) => (
+                            <button 
+                              key={time} 
+                              onClick={() => {
+                                updateBookingData('selectedTime', time);
+                                setError('');
+                              }} 
+                              className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
+                                bookingData.selectedTime === time 
+                                  ? 'bg-cosmo-green text-white' 
+                                  : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
+                              }`}
+                              style={{ fontFamily: 'Manrope, sans-serif' }}
+                            >
+                              {time}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
+
+                    {timeSlots.morning.length === 0 && timeSlots.afternoon.length === 0 && !isClinicClosed && (
+                      <div className="text-center text-gray-500 py-8">
+                        Loading available time slots...
+                      </div>
+                    )}
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
