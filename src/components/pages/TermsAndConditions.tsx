@@ -25,8 +25,8 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onNext, onBack 
       <Header />
       <div className="flex-1 w-full bg-white flex flex-col items-center pt-[53px] pb-[100px]">
         <h1 
-          className="m-0 mb-[47px]" 
-          style={{ color: '#00B389', fontFamily: 'Manrope, sans-serif', fontSize: '24px', fontStyle: 'normal', fontWeight: 700, lineHeight: 'normal', letterSpacing: '-0.48px' }}
+          className="text-cosmo-green m-0 mb-[47px]" 
+          style={{ fontFamily: 'Manrope, sans-serif', fontSize: '24px', fontStyle: 'normal', fontWeight: 700, lineHeight: 'normal', letterSpacing: '-0.48px' }}
         >
           Terms and Conditions
         </h1>
@@ -51,7 +51,7 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onNext, onBack 
             {onNext && (
               <button 
                 onClick={onNext} 
-                className="bg-cosmo-green text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
+                className="bg-cosmo-green text-white px-8 py-3 rounded-md text-sm font-semibold hover:opacity-90 transition-colors"
                 style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 Continue

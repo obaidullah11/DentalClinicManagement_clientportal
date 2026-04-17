@@ -3,7 +3,7 @@
  * Handles all communication with the backend API
  */
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://c552-2407-aa80-116-9967-6145-93b2-b02c-d571.ngrok-free.app/api';
 
 export interface ApiError {
   success: false;

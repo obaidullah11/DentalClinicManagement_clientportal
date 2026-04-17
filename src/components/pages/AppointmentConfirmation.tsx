@@ -409,7 +409,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
                       hasSubmittedRef.current = false;
                       onBack();
                     }}
-                    className="px-6 py-2 bg-cosmo-green text-white rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
+                    className="px-6 py-2 bg-cosmo-green text-white rounded-md text-sm font-semibold hover:opacity-90 transition-colors"
                   >
                     Go Back to Edit
                   </button>

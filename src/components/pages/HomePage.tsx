@@ -48,8 +48,8 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBooking }) => {
             </p>
             <button 
               onClick={onStartBooking} 
-              className="cursor-pointer transition-opacity duration-200 hover:opacity-90 border-none"
-              style={{ width: '343px', height: '58px', borderRadius: '10px', background: '#00B389', color: '#FFF', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 700, lineHeight: '30px', letterSpacing: '-0.32px' }}
+              className="bg-cosmo-green text-white cursor-pointer transition-opacity duration-200 hover:opacity-90 border-none"
+              style={{ width: '343px', height: '58px', borderRadius: '10px', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 700, lineHeight: '30px', letterSpacing: '-0.32px' }}
             >
               I'll make an appointment
             </button>

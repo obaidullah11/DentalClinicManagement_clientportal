@@ -252,17 +252,22 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                   <div className="flex flex-col relative">
                     <input 
                       type="text"
-                      placeholder="Date of Birth"
+                      placeholder="YYYY-MM-DD (e.g., 1990-05-15)"
                       value={bookingData.dateOfBirth}
                       onChange={(e) => {
-                        let val = e.target.value.replace(/[^0-9]/g, '');
-                        if (val.length >= 5) val = val.slice(0,4) + '-' + val.slice(4);
-                        if (val.length >= 8) val = val.slice(0,7) + '-' + val.slice(7);
+                        let val = e.target.value.replace(/[^0-9-]/g, '');
+                        // Auto-format as user types
+                        if (val.length === 4 && !val.includes('-')) {
+                          val = val + '-';
+                        } else if (val.length === 7 && val.split('-').length === 2) {
+                          val = val + '-';
+                        }
+                        // Limit to YYYY-MM-DD format (10 characters)
                         val = val.slice(0, 10);
                         updateBookingData('dateOfBirth', val);
                       }}
                       maxLength={10}
-                      className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
+                      className={`px-[20px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
                       style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.dateOfBirth ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[30px] text-red-500 text-xs z-10">*</span>}

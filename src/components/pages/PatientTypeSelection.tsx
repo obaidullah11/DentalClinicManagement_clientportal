@@ -189,8 +189,8 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
               <button 
                 onClick={handleNext} 
                 disabled={!isFormValid()}
-                className={`transition-opacity flex items-center justify-center border-none ${isFormValid() ? 'hover:opacity-90 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
-                style={{ width: '256px', height: '55px', borderRadius: '8px', background: '#00B389', color: '#FFF', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 600, lineHeight: 'normal', letterSpacing: '-0.32px' }}
+                className={`bg-cosmo-green text-white transition-opacity flex items-center justify-center border-none ${isFormValid() ? 'hover:opacity-90 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                style={{ width: '256px', height: '55px', borderRadius: '8px', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 600, lineHeight: 'normal', letterSpacing: '-0.32px' }}
               >
                 Confirm
               </button>
