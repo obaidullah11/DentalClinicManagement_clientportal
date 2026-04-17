@@ -13,6 +13,13 @@ import PrivacyPolicy from './components/pages/PrivacyPolicy';
 
 const App: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  
+  // Get current date for default selectedDate
+  const today = new Date();
+  const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'];
+  const defaultDate = `Today, ${months[today.getMonth()]} ${today.getDate()}`;
+  
   const [bookingData, setBookingData] = useState<BookingData>({
     patientType: '',
     reason: '',
@@ -25,7 +32,7 @@ const App: React.FC = () => {
     occupation: '',
     mobileNumber: '',
     emailAddress: '',
-    selectedDate: 'Today, October 2',
+    selectedDate: defaultDate,
     selectedTime: '',
     howDidYouKnow: '',
     notes: '',
@@ -76,13 +83,73 @@ const App: React.FC = () => {
     }));
   };
 
+  // Reset booking data when starting a new appointment
+  const resetBookingData = () => {
+    // Get current date for default selectedDate
+    const today = new Date();
+    const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'];
+    const defaultDate = `Today, ${months[today.getMonth()]} ${today.getDate()}`;
+    
+    setBookingData({
+      patientType: '',
+      reason: '',
+      firstName: '',
+      lastName: '',
+      middleName: '',
+      gender: '',
+      civilStatus: '',
+      dateOfBirth: '',
+      occupation: '',
+      mobileNumber: '',
+      emailAddress: '',
+      selectedDate: defaultDate,
+      selectedTime: '',
+      howDidYouKnow: '',
+      notes: '',
+      medicalHistory: {
+        generalHealth: '',
+        medicalTreatment: '',
+        medicalCondition: '',
+        services: '',
+        hospitalized: '',
+        hospitalizedWhy: '',
+        prescriptionMedication: '',
+        prescriptionSpecify: '',
+        tobacco: '',
+        alcohol: '',
+        allergic: '',
+        allergicItems: {
+          localAnesthetic: false,
+          penicillin: false,
+          sulfa: false,
+          aspirin: false,
+          latex: false,
+          others: false
+        },
+        bleedingTime: '',
+        forWomenOnly: {
+          pregnant: '',
+          nursing: '',
+          birthControl: ''
+        },
+        bloodType: '',
+        bloodPressure: '',
+        followingConditions: []
+      }
+    });
+  };
+
   // Render the appropriate component based on current step
   return (
     <WebsiteSettingsProvider>
       {(() => {
         switch (currentStep) {
           case 0:
-            return <HomePage onStartBooking={() => setCurrentStep(1)} />;
+            return <HomePage onStartBooking={() => {
+              resetBookingData();
+              setCurrentStep(1);
+            }} />;
 
           case 1:
             return (
@@ -111,8 +178,8 @@ const App: React.FC = () => {
                 updateBookingData={updateBookingData}
                 showCalendar={showCalendar}
                 setShowCalendar={setShowCalendar}
-                onNext={() => setCurrentStep(bookingData.patientType === 'Existing' ? 6 : 4)}
-                onBack={() => setCurrentStep(bookingData.patientType === 'Existing' ? 1 : 2)}
+                onNext={() => setCurrentStep(4)}
+                onBack={() => setCurrentStep(2)}
                 onChangePatientType={() => setCurrentStep(1)}
               />
             );
@@ -142,8 +209,11 @@ const App: React.FC = () => {
             return (
               <AppointmentConfirmation
                 bookingData={bookingData}
-                onNext={() => setCurrentStep(0)}
-                onBack={() => setCurrentStep(3)}
+                onNext={() => {
+                  resetBookingData();
+                  setCurrentStep(0);
+                }}
+                onBack={() => setCurrentStep(5)}
               />
             );
 

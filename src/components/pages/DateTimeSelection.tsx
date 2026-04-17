@@ -22,11 +22,80 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   onBack,
   onChangePatientType
 }) => {
-  const [currentMonth, setCurrentMonth] = useState(9); // October (0-indexed)
-  const [currentYear, setCurrentYear] = useState(2025);
-  const [selectedDate, setSelectedDate] = useState(2);
-  const [selectedMonth, setSelectedMonth] = useState(9); // Track selected month
-  const [selectedYear, setSelectedYear] = useState(2025); // Track selected year
+  // Get current date
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState(today.getDate());
+  const [selectedMonth, setSelectedMonth] = useState(today.getMonth());
+  const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+  const [error, setError] = useState<string>('');
+
+  const validateAppointmentDate = (dateStr: string): boolean => {
+    setError('');
+    
+    if (!dateStr) {
+      setError('Please select an appointment date');
+      return false;
+    }
+
+    // Parse the date string (format: "October 2, 2025" or "Today, October 2")
+    let appointmentDate: Date;
+    
+    if (dateStr.toLowerCase().includes('today')) {
+      appointmentDate = new Date();
+      appointmentDate.setHours(0, 0, 0, 0);
+    } else {
+      // Parse "October 2, 2025" format
+      const match = dateStr.match(/(\w+)\s+(\d+),?\s+(\d{4})/);
+      if (match) {
+        const [, monthName, day, year] = match;
+        const monthNames = ['january', 'february', 'march', 'april', 'may', 'june',
+                           'july', 'august', 'september', 'october', 'november', 'december'];
+        const monthIndex = monthNames.findIndex(m => m.startsWith(monthName.toLowerCase()));
+        if (monthIndex !== -1) {
+          appointmentDate = new Date(parseInt(year), monthIndex, parseInt(day));
+          appointmentDate.setHours(0, 0, 0, 0);
+        } else {
+          setError('Invalid date format');
+          return false;
+        }
+      } else {
+        setError('Invalid date format');
+        return false;
+      }
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const oneYearFromNow = new Date();
+    oneYearFromNow.setFullYear(today.getFullYear() + 1);
+    oneYearFromNow.setHours(0, 0, 0, 0);
+
+    if (appointmentDate < today) {
+      setError('Please select today or a future date');
+      return false;
+    }
+
+    if (appointmentDate >= oneYearFromNow) {
+      setError('Appointment date must be within 1 year');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (!bookingData.selectedTime) {
+      setError('Please select an appointment time');
+      return;
+    }
+    
+    if (validateAppointmentDate(bookingData.selectedDate)) {
+      onNext();
+    }
+  };
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -64,7 +133,9 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     setSelectedMonth(currentMonth);
     setSelectedYear(currentYear);
     const monthName = months[currentMonth];
-    updateBookingData('selectedDate', `${monthName} ${date}, ${currentYear}`);
+    const dateStr = `${monthName} ${date}, ${currentYear}`;
+    updateBookingData('selectedDate', dateStr);
+    setError(''); // Clear error when date is selected
   };
 
   const generateDateButtons = () => {
@@ -97,7 +168,9 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     setSelectedMonth(buttonDate.getMonth());
     setSelectedYear(buttonDate.getFullYear());
     const monthName = months[buttonDate.getMonth()];
-    updateBookingData('selectedDate', `${monthName} ${buttonDate.getDate()}, ${buttonDate.getFullYear()}`);
+    const dateStr = `${monthName} ${buttonDate.getDate()}, ${buttonDate.getFullYear()}`;
+    updateBookingData('selectedDate', dateStr);
+    setError(''); // Clear error when date is selected
   };
 
   const renderCalendarDates = () => {
@@ -136,7 +209,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     <div className="min-h-screen bg-white font-sans">
       <Header />
       <div className="w-full flex flex-col items-center pt-[53px] pb-[50px]">
-        <h1 className="text-[24px] font-bold text-[#00b389] mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h1 className="text-[24px] font-bold text-cosmo-green mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
           Book your Appointment
         </h1>
 
@@ -159,8 +232,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
               <div className="mb-[30px] flex-shrink-0 mt-2">
                 <div className="flex items-center justify-between mb-[16px]">
                   <span className="text-[20px] font-bold text-[#242424] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                    {selectedDate === 2 && selectedMonth === 9 && selectedYear === 2025 
-                      ? 'Today, October 2' 
+                    {selectedDate === today.getDate() && selectedMonth === today.getMonth() && selectedYear === today.getFullYear()
+                      ? `Today, ${months[selectedMonth]} ${selectedDate}` 
                       : `${months[selectedMonth]} ${selectedDate}, ${selectedYear}`}
                   </span>
                   <div className="flex items-center gap-4">
@@ -183,7 +256,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       onClick={() => handleDateButtonClick(button.fullDate)}
                       className={`w-[95px] h-[83px] rounded-[8px] text-center transition-colors flex-shrink-0 flex flex-col items-center justify-center ${
                         button.isSelected 
-                          ? 'bg-[#00b389] text-white' 
+                          ? 'bg-cosmo-green text-white' 
                           : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                       }`}
                       style={{ fontFamily: 'Manrope, sans-serif' }}
@@ -202,10 +275,13 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                     {['9:00 AM', '9:45 AM', '10:00 AM', '10:45 AM'].map((time) => (
                       <button 
                         key={time} 
-                        onClick={() => updateBookingData('selectedTime', time)} 
+                        onClick={() => {
+                          updateBookingData('selectedTime', time);
+                          setError(''); // Clear error when time is selected
+                        }} 
                         className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
                           bookingData.selectedTime === time 
-                            ? 'bg-[#00b389] text-white' 
+                            ? 'bg-cosmo-green text-white' 
                             : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                         }`}
                         style={{ fontFamily: 'Manrope, sans-serif' }}
@@ -220,10 +296,13 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                     {['12:00 PM', '12:45 PM', '01:00 PM', '01:45 PM', '02:00 PM', '02:45 PM', '03:00 PM'].map((time) => (
                       <button 
                         key={time} 
-                        onClick={() => updateBookingData('selectedTime', time)} 
+                        onClick={() => {
+                          updateBookingData('selectedTime', time);
+                          setError(''); // Clear error when time is selected
+                        }} 
                         className={`w-[128px] h-[58px] rounded-[10px] text-[18px] font-medium tracking-[-0.36px] transition-colors flex items-center justify-center ${
                           bookingData.selectedTime === time 
-                            ? 'bg-[#00b389] text-white' 
+                            ? 'bg-cosmo-green text-white' 
                             : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                         }`}
                         style={{ fontFamily: 'Manrope, sans-serif' }}
@@ -244,18 +323,21 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                 >
                   Back
                 </button>
-                <button 
-                  onClick={onNext} 
-                  disabled={!bookingData.selectedTime || !bookingData.selectedDate}
-                  className={`w-[256px] h-[55px] text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] transition-colors flex items-center justify-center ${
-                    bookingData.selectedTime && bookingData.selectedDate
-                      ? 'bg-[#00b389] hover:bg-[#009673] cursor-pointer'
-                      : 'bg-[#00b389] opacity-50 cursor-not-allowed'
-                  }`}
-                  style={{ fontFamily: 'Manrope, sans-serif' }}
-                >
-                  Continue
-                </button>
+                <div className="flex flex-col items-center">
+                  <button 
+                    onClick={handleNext} 
+                    disabled={!bookingData.selectedTime || !bookingData.selectedDate}
+                    className={`w-[256px] h-[55px] text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] transition-colors flex items-center justify-center ${
+                      bookingData.selectedTime && bookingData.selectedDate
+                        ? 'bg-cosmo-green hover:opacity-90 cursor-pointer'
+                        : 'bg-cosmo-green opacity-50 cursor-not-allowed'
+                    }`}
+                    style={{ fontFamily: 'Manrope, sans-serif' }}
+                  >
+                    Continue
+                  </button>
+                  {error && <span className="text-red-500 text-xs mt-2">{error}</span>}
+                </div>
               </div>
 
             {/* Calendar popup - Full width modal at bottom */}
@@ -313,7 +395,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                           updateBookingData('selectedDate', `${monthName} ${selectedDate}, ${currentYear}`);
                           setShowCalendar(false);
                         }} 
-                        className="bg-[#00b389] text-white px-8 py-2 rounded-md text-[14px] font-semibold tracking-[-0.28px] hover:bg-[#009673] transition-colors"
+                        className="bg-cosmo-green text-white px-8 py-2 rounded-md text-[14px] font-semibold tracking-[-0.28px] hover:opacity-90 transition-colors"
                         style={{ fontFamily: 'Manrope, sans-serif' }}
                       >
                         Confirm
@@ -336,3 +418,4 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 };
 
 export default DateTimeSelection;
+

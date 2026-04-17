@@ -41,7 +41,7 @@ const API_URL = 'http://127.0.0.1:8000/api/public/website-settings';
 
 export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = ({ children }) => {
   const [settings, setSettings] = useState<WebsiteSettings | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changed to false - don't block UI
   const [error, setError] = useState<string | null>(null);
 
   const fetchSettings = async () => {
@@ -49,9 +49,12 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
       setLoading(true);
       setError(null);
       
+      // Set default primary color immediately
+      document.documentElement.style.setProperty('--primary-color', '#00B389');
+      
       // Create AbortController for timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // Reduced to 5 second timeout
       
       try {
         const response = await fetch(API_URL, {
@@ -76,6 +79,7 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
           // Update CSS variable for primary color dynamically
           if (result.data.primary_color) {
             document.documentElement.style.setProperty('--primary-color', result.data.primary_color);
+            console.log('✅ Dynamic color loaded:', result.data.primary_color);
           }
         } else {
           throw new Error(result.message || 'Failed to load website settings');
@@ -87,13 +91,13 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
     } catch (err) {
       const errorMessage = err instanceof Error 
         ? (err.name === 'AbortError' 
-          ? 'Request timeout. Please check your connection.' 
+          ? 'Request timeout. Using default settings.' 
           : err.message)
         : 'An error occurred while fetching website settings';
       setError(errorMessage);
-      console.error('Error fetching website settings:', err);
+      console.warn('⚠️ Website settings not loaded, using defaults:', errorMessage);
       
-      // Set default primary color on error
+      // Keep default primary color on error
       document.documentElement.style.setProperty('--primary-color', '#00B389');
     } finally {
       setLoading(false);
@@ -101,6 +105,10 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
   };
 
   useEffect(() => {
+    // Set default color immediately before fetching
+    document.documentElement.style.setProperty('--primary-color', '#00B389');
+    
+    // Fetch settings in background
     fetchSettings();
   }, []);
 

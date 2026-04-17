@@ -19,6 +19,8 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
 }) => {
   const { settings } = useWebsiteSettings();
   const [othersText, setOthersText] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showErrors, setShowErrors] = useState(false);
 
   // Default procedure choices if API doesn't provide them
   const defaultChoices = ['Consultation', 'Cleaning', 'Filling (Pasta)', 'X-Ray', 'Extraction', 'Veneers', 'Braces', 'Treatment'];
@@ -35,6 +37,61 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
     setOthersText(value);
     if (value.trim()) {
       updateBookingData('reason', value);
+      // Clear error when user types
+      if (errors.reason) {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.reason;
+          return newErrors;
+        });
+      }
+    }
+  };
+
+  const handlePatientTypeChange = (type: string) => {
+    updateBookingData('patientType', type);
+    // Clear error when user selects
+    if (errors.patientType) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.patientType;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleReasonChange = (reason: string) => {
+    updateBookingData('reason', reason);
+    setOthersText(''); // Clear others text when selecting a predefined reason
+    // Clear error when user selects
+    if (errors.reason) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.reason;
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!bookingData.patientType) {
+      newErrors.patientType = 'Please select a patient type';
+    }
+
+    if (!bookingData.reason && !othersText.trim()) {
+      newErrors.reason = 'Please select a reason for visit or specify in Others';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    setShowErrors(true);
+    if (validateForm()) {
+      onNext();
     }
   };
 
@@ -49,7 +106,7 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
       {/* Main content centered */}
       <div className="w-full flex flex-col items-center pt-[53px] pb-[50px]">
         {/* Title centered above everything */}
-        <h1 className="text-[24px] font-bold text-[#00b389] mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h1 className="text-[24px] font-bold text-cosmo-green mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
           Book your Appointment
         </h1>
 
@@ -64,10 +121,10 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
               </h3>
               <div className="flex gap-[12px]">
                 <button 
-                  onClick={() => updateBookingData('patientType', 'New')} 
+                  onClick={() => handlePatientTypeChange('New')} 
                   className={`rounded-[10px] text-[18px] transition-colors cursor-pointer w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
                     bookingData.patientType === 'New' 
-                      ? 'bg-[#00b389] text-white font-semibold' 
+                      ? 'bg-cosmo-green text-white font-semibold' 
                       : 'bg-[#f3f3f3] text-[#242424] font-medium hover:bg-gray-200'
                   }`}
                   style={{ fontFamily: 'Manrope, sans-serif' }}
@@ -75,10 +132,10 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
                   New
                 </button>
                 <button 
-                  onClick={() => updateBookingData('patientType', 'Existing')} 
+                  onClick={() => handlePatientTypeChange('Existing')} 
                   className={`rounded-[10px] text-[18px] transition-colors cursor-pointer w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
                     bookingData.patientType === 'Existing' 
-                      ? 'bg-[#00b389] text-white font-semibold' 
+                      ? 'bg-cosmo-green text-white font-semibold' 
                       : 'bg-[#f3f3f3] text-[#242424] font-medium hover:bg-gray-200'
                   }`}
                   style={{ fontFamily: 'Manrope, sans-serif' }}
@@ -86,8 +143,8 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
                   Existing
                 </button>
               </div>
-              {!bookingData.patientType && (
-                <p className="text-red-500 text-xs mt-2">Please select a patient type</p>
+              {showErrors && errors.patientType && (
+                <p className="text-red-500 text-xs mt-2">{errors.patientType}</p>
               )}
             </div>
 
@@ -100,10 +157,10 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
                 {procedureChoices.map((reason) => (
                   <button 
                     key={reason} 
-                    onClick={() => updateBookingData('reason', reason)} 
+                    onClick={() => handleReasonChange(reason)} 
                     className={`rounded-[10px] text-[18px] transition-colors cursor-pointer h-[58px] tracking-[-0.36px] flex items-center justify-center px-[20px] whitespace-nowrap ${
                       bookingData.reason === reason 
-                        ? 'bg-[#00b389] text-white font-semibold' 
+                        ? 'bg-cosmo-green text-white font-semibold' 
                         : 'bg-[#f3f3f3] text-[#242424] font-medium hover:bg-gray-200'
                     }`}
                     style={{ fontFamily: 'Manrope, sans-serif' }}
@@ -118,24 +175,24 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
                   value={othersText}
                   onChange={(e) => handleOthersChange(e.target.value)}
                   placeholder="Others" 
-                  className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium focus:outline-none focus:border-[#00b389] h-[55px] text-[#242424] placeholder:text-[#9f9f9f] tracking-[-0.28px]" 
+                  className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium focus:outline-none focus:border-cosmo-green h-[55px] text-[#242424] placeholder:text-[#9f9f9f] tracking-[-0.28px]" 
                   style={{ fontFamily: 'Manrope, sans-serif' }}
                 />
               </div>
-              {!bookingData.reason && !othersText.trim() && (
-                <p className="text-red-500 text-xs mt-2">Please select a reason for visit or specify in Others</p>
+              {showErrors && errors.reason && (
+                <p className="text-red-500 text-xs mt-2">{errors.reason}</p>
               )}
             </div>
 
             {/* Confirm Button */}
             <div className="pt-[30px] pb-8 flex justify-center lg:justify-end gap-[14px]">
               <button 
-                onClick={onNext} 
+                onClick={handleNext} 
                 disabled={!isFormValid()}
                 className={`w-[256px] h-[55px] rounded-[8px] text-[16px] font-semibold transition-colors flex items-center justify-center tracking-[-0.32px] ${
                   isFormValid()
-                    ? 'bg-[#00b389] text-white hover:bg-[#009673] cursor-pointer' 
-                    : 'bg-[#00b389] text-white opacity-50 cursor-not-allowed'
+                    ? 'bg-cosmo-green text-white hover:opacity-90 cursor-pointer' 
+                    : 'bg-cosmo-green text-white opacity-50 cursor-not-allowed'
                 }`}
                 style={{ fontFamily: 'Manrope, sans-serif' }}
               >

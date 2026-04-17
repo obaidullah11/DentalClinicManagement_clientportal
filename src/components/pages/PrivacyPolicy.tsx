@@ -25,7 +25,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onNext, onBack }) => {
       <Header />
       <div className="flex-1 w-full bg-white flex flex-col items-center pt-[53px] pb-[100px]">
         <h1 
-          className="text-[#00b389] text-[24px] font-bold leading-[normal] tracking-[-0.48px] text-center m-0" 
+          className="text-cosmo-green text-[24px] font-bold leading-[normal] tracking-[-0.48px] text-center m-0" 
           style={{ fontFamily: 'Manrope, sans-serif' }}
         >
           Privacy Policy
@@ -51,7 +51,7 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onNext, onBack }) => {
             {onNext && (
               <button 
                 onClick={onNext} 
-                className="bg-[#00b389] text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
+                className="bg-cosmo-green text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors"
                 style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 Continue
@@ -65,3 +65,4 @@ const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ onNext, onBack }) => {
 };
 
 export default PrivacyPolicy;
+

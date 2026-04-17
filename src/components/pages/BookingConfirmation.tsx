@@ -19,6 +19,8 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [showErrors, setShowErrors] = useState(false);
 
   const options = [
     "Walk-in",
@@ -43,6 +45,14 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   const handleOptionSelect = (value: string) => {
     updateBookingData('howDidYouKnow', value);
     setIsDropdownOpen(false);
+    // Clear error when user selects
+    if (errors.howDidYouKnow) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.howDidYouKnow;
+        return newErrors;
+      });
+    }
   };
 
   const handleDropdownToggle = () => {
@@ -61,6 +71,24 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!bookingData.howDidYouKnow) {
+      newErrors.howDidYouKnow = 'Please select how you heard about us';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    setShowErrors(true);
+    if (validateForm()) {
+      onNext();
+    }
+  };
+
   const isFormValid = () => {
     return !!bookingData.howDidYouKnow;
   };
@@ -69,7 +97,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     <div className="min-h-screen bg-white font-sans">
       <Header />
       <div className="w-full flex flex-col items-center pt-[53px] pb-[50px]">
-        <h1 className="text-[24px] font-bold text-[#00b389] mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h1 className="text-[24px] font-bold text-cosmo-green mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
           Book your Appointment
         </h1>
 
@@ -88,14 +116,14 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                 <div className="flex gap-[12px]">
                   <div className={`rounded-[10px] text-[18px] transition-colors w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
                     bookingData.patientType === 'New' 
-                      ? 'bg-[#00b389] text-white font-semibold' 
+                      ? 'bg-cosmo-green text-white font-semibold' 
                       : 'bg-[#f3f3f3] text-[#242424] font-medium'
                   }`} style={{ fontFamily: 'Manrope, sans-serif' }}>
                     New
                   </div>
                   <div className={`rounded-[10px] text-[18px] transition-colors w-[157px] h-[58px] tracking-[-0.36px] flex items-center justify-center ${
                     bookingData.patientType === 'Existing' 
-                      ? 'bg-[#00b389] text-white font-semibold' 
+                      ? 'bg-cosmo-green text-white font-semibold' 
                       : 'bg-[#f3f3f3] text-[#242424] font-medium'
                   }`} style={{ fontFamily: 'Manrope, sans-serif' }}>
                     Existing
@@ -126,7 +154,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                   <button
                     type="button"
                     onClick={handleDropdownToggle}
-                    className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] text-left bg-white flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-[#00b389] focus:border-[#00b389] tracking-[-0.28px]"
+                    className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] text-left bg-white flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-cosmo-green focus:border-cosmo-green tracking-[-0.28px]"
                     style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
                     <span className={bookingData.howDidYouKnow ? 'text-[#242424]' : 'text-[#9f9f9f]'}>
@@ -162,6 +190,9 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                     </div>
                   )}
                 </div>
+                {showErrors && errors.howDidYouKnow && (
+                  <p className="text-red-500 text-xs mt-2">{errors.howDidYouKnow}</p>
+                )}
               </div>
               
               <div className="mb-[30px]">
@@ -172,7 +203,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                   value={bookingData.notes} 
                   onChange={(e) => updateBookingData('notes', e.target.value)} 
                   placeholder="Write..." 
-                  className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] resize-none focus:outline-none focus:border-[#00b389] tracking-[-0.28px] placeholder:text-[#9f9f9f]"
+                  className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] resize-none focus:outline-none focus:border-cosmo-green tracking-[-0.28px] placeholder:text-[#9f9f9f]"
                   style={{ fontFamily: 'Manrope, sans-serif' }}
                 ></textarea>
               </div>
@@ -187,10 +218,10 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                 Back
               </button>
               <button 
-                onClick={onNext} 
+                onClick={handleNext} 
                 disabled={!isFormValid()}
                 className={`w-[256px] h-[55px] text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] transition-colors flex items-center justify-center ${
-                  isFormValid() ? 'bg-[#00b389] hover:bg-[#009673]' : 'bg-[#00b389] opacity-50 cursor-not-allowed'
+                  isFormValid() ? 'bg-cosmo-green hover:opacity-90' : 'bg-cosmo-green opacity-50 cursor-not-allowed'
                 }`}
                 style={{ fontFamily: 'Manrope, sans-serif' }}
               >
@@ -210,3 +241,4 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
 };
 
 export default BookingConfirmation;
+

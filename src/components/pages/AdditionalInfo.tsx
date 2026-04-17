@@ -64,7 +64,7 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({
     <div className="min-h-screen bg-white font-sans overflow-x-hidden flex flex-col h-screen">
       <Header />
       <div className="w-full flex flex-col items-center pt-[53px] pb-[50px] overflow-hidden flex-1">
-        <h1 className="text-[24px] font-bold text-[#00b389] mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
+        <h1 className="text-[24px] font-bold text-cosmo-green mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
           Book your Appointment
         </h1>
 
@@ -153,7 +153,7 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({
                 </button>
                 <button 
                   onClick={onNext} 
-                  className="w-[256px] h-[55px] bg-[#00b389] text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] hover:bg-[#009673] transition-colors flex items-center justify-center"
+                  className="w-[256px] h-[55px] bg-cosmo-green text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] hover:opacity-90 transition-colors flex items-center justify-center"
                   style={{ fontFamily: 'Manrope, sans-serif' }}
                 >
                   Next

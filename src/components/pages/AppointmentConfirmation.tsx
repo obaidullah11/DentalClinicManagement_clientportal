@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
 import { 
@@ -22,6 +22,11 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
   const hasSubmittedRef = useRef(false);
+
+  // Reset hasSubmittedRef when component mounts (for new appointments)
+  useEffect(() => {
+    hasSubmittedRef.current = false;
+  }, []);
 
   // Calculate age from date of birth
   const calculateAge = (dateOfBirth: string) => {
@@ -107,7 +112,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
     const trimmed = bloodPressure.trim();
     if (!trimmed) return undefined;
     
-    // Check if it already matches the format XXX/XX or XX/XX
+    // Check if it successfully matches the format XXX/XX or XX/XX
     if (/^\d{2,3}\/\d{1,2}$/.test(trimmed)) {
       // Normalize to XXX/XX format
       const parts = trimmed.split('/');
@@ -456,7 +461,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
             <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0 not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
               <span className="leading-[normal]">Hi </span>
               <span className="font-semibold leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>{bookingData.firstName || 'Timothy'}</span>
-              <span className="leading-[normal]">, we’ve already</span>
+              <span className="leading-[normal]">, we’ve successfully</span>
             </p>
             <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0" style={{ fontFamily: 'Inter, sans-serif' }}>
               <span className="leading-[normal]">received your request for an appointment</span>
@@ -477,7 +482,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           <p className="absolute left-[165px] top-[297px] m-0 text-[#242424] text-[20px] font-medium leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
             {bookingData.patientType || 'New'} Patient
           </p>
-          <p className="absolute left-[165px] top-[332px] m-0 text-[#00b389] text-[16px] font-semibold leading-[normal] tracking-[-0.32px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <p className="absolute left-[165px] top-[332px] m-0 text-cosmo-green text-[16px] font-semibold leading-[normal] tracking-[-0.32px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
             {bookingData.reason || 'Consultation'}
           </p>
           <p className="absolute left-[165px] top-[366px] m-0 text-[#242424] text-[20px] font-bold leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -523,17 +528,10 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 
         </div>
         
-        <div className="flex justify-center mt-[40px] pb-8 w-full gap-4">
-          <button
-            onClick={onBack}
-            className="w-[256px] h-[55px] bg-[#f3f3f3] text-[#242424] text-[16px] font-semibold rounded-[8px] tracking-[-0.32px] hover:bg-gray-200 transition-colors flex items-center justify-center cursor-pointer border-none"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
-          >
-            Back
-          </button>
+        <div className="flex justify-center mt-[40px] pb-8 w-full">
           <button
             onClick={onNext}
-            className="w-[256px] h-[55px] bg-[#00b389] text-[16px] text-white font-semibold rounded-[8px] tracking-[-0.32px] hover:bg-[#009673] transition-colors flex items-center justify-center cursor-pointer border-none"
+            className="w-[256px] h-[55px] bg-cosmo-green text-[16px] text-white font-semibold rounded-[8px] tracking-[-0.32px] hover:opacity-90 transition-colors flex items-center justify-center cursor-pointer border-none"
             style={{ fontFamily: 'Manrope, sans-serif' }}
           >
             Continue
@@ -545,3 +543,4 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 };
 
 export default AppointmentConfirmation;
+

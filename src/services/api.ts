@@ -279,21 +279,26 @@ export function formatDateForAPI(date: string | Date): string {
     // Handle "Today, October 2" format or similar
     if (date.toLowerCase().includes('today')) {
       dateObj = new Date();
+      // Set to start of day to avoid timezone issues
+      dateObj.setHours(0, 0, 0, 0);
     } else if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
       // Already in YYYY-MM-DD format, parse it using local timezone
       const [year, month, day] = date.split('-').map(Number);
       dateObj = new Date(year, month - 1, day);
     } else {
-      // Try to parse date strings like "October 2, 2025" or "October 2, 2025"
+      // Try to parse date strings like "October 2, 2025" or "October 2"
       // Parse manually to avoid timezone issues
-      const dateMatch = date.match(/(\w+)\s+(\d+),?\s+(\d{4})/);
+      const dateMatch = date.match(/(\w+)\s+(\d+),?\s*(\d{4})?/);
       if (dateMatch) {
         const [, monthName, day, year] = dateMatch;
         const monthNames = ['january', 'february', 'march', 'april', 'may', 'june',
                            'july', 'august', 'september', 'october', 'november', 'december'];
         const monthIndex = monthNames.findIndex(m => m.startsWith(monthName.toLowerCase()));
         if (monthIndex !== -1) {
-          dateObj = new Date(parseInt(year), monthIndex, parseInt(day));
+          // If year is not provided, use current year
+          const currentYear = new Date().getFullYear();
+          const yearToUse = year ? parseInt(year) : currentYear;
+          dateObj = new Date(yearToUse, monthIndex, parseInt(day));
         } else {
           // Fallback to standard parsing
           dateObj = new Date(date);
