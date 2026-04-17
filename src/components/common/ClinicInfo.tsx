@@ -21,23 +21,23 @@ const ClinicInfo: React.FC = () => {
           />
         </div>
         <div className="flex-1 px-6 pt-4">
-          <h3 className="text-[20px] font-bold text-[#242424] mb-2 tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Cosmodental BGC</h3>
-          <p className="text-[14px] text-[#242424] mb-4 tracking-[-0.28px] underline" style={{ fontFamily: 'Manrope, sans-serif' }}>6th floor, Premier Bldg., McKinley Parkway, Bonifacio Global City, Taguig, 1634, Metro Manila</p>
+          <h3 className="mb-2" style={{ color: '#242424', fontFamily: 'Manrope, sans-serif', fontSize: '20px', fontStyle: 'normal', fontWeight: 700, lineHeight: 'normal', letterSpacing: '-0.4px' }}>Cosmodental BGC</h3>
+          <p className="mb-4" style={{ color: '#242424', fontFamily: 'Manrope, sans-serif', fontSize: '14px', fontStyle: 'normal', fontWeight: 400, lineHeight: 'normal', letterSpacing: '-0.28px', textDecorationLine: 'underline', textDecorationStyle: 'solid', textDecorationSkipInk: 'auto', textDecorationThickness: 'auto', textUnderlineOffset: 'auto', textUnderlinePosition: 'from-font' }}>6th floor, Premier Bldg., McKinley Parkway, Bonifacio Global City, Taguig, 1634, Metro Manila</p>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <img src="/images/phone.svg" alt="Phone" className="w-[18px] h-[18px]" />
+              <img src="/images/phone.svg" alt="Phone" style={{ width: '18px', height: '18px', aspectRatio: '1/1' }} />
               <span className="text-[14px] text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>(02) 123 456</span>
             </div>
             <div className="flex items-center gap-3">
-              <img src="/images/smartphone.svg" alt="Mobile" className="w-[18px] h-[18px]" />
+              <img src="/images/smartphone.svg" alt="Mobile" style={{ width: '18px', height: '18px', aspectRatio: '1/1' }} />
               <span className="text-[14px] text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>(+63) 912 345 6789</span>
             </div>
             <div className="flex items-center gap-3">
-              <img src="/images/mail.svg" alt="Email" className="w-[18px] h-[18px]" />
+              <img src="/images/mail.svg" alt="Email" style={{ width: '18px', height: '18px', aspectRatio: '1/1' }} />
               <span className="text-[14px] text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>cosmodental@email.com</span>
             </div>
             <div className="flex items-center gap-3">
-              <img src="/images/clock-4.svg" alt="Clock" className="w-[18px] h-[18px]" />
+              <img src="/images/clock-4.svg" alt="Clock" style={{ width: '18px', height: '18px', aspectRatio: '1/1' }} />
               <span className="text-[14px] text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Open until 7:00 PM</span>
             </div>
           </div>

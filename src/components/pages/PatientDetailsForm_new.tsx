@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
 import Header from '../common/Header';
+import Footer from '../common/Footer';
 import { BookingData } from '../../types/BookingTypes';
 
 interface PatientDetailsFormProps {
@@ -82,17 +83,24 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
       if (!bookingData.dateOfBirth) {
         newErrors.dateOfBirth = 'Date of Birth is required';
       } else {
-        const dob = new Date(bookingData.dateOfBirth);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time to start of day
-        
-        const oneHundredFiftyYearsAgo = new Date();
-        oneHundredFiftyYearsAgo.setFullYear(today.getFullYear() - 150);
-        
-        if (dob >= today) {
-          newErrors.dateOfBirth = 'Date of birth must be before today';
-        } else if (dob < oneHundredFiftyYearsAgo) {
-          newErrors.dateOfBirth = 'Please enter a valid date of birth';
+        const parts = bookingData.dateOfBirth.split('-');
+        if (parts.length !== 3 || parts[0].length !== 4 || parts[1].length !== 2 || parts[2].length !== 2) {
+          newErrors.dateOfBirth = 'Use YYYY-MM-DD format';
+        } else {
+          const [yyyy, mm, dd] = parts.map(Number);
+          const dob = new Date(yyyy, mm - 1, dd);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const oneHundredFiftyYearsAgo = new Date();
+          oneHundredFiftyYearsAgo.setFullYear(today.getFullYear() - 150);
+
+          if (isNaN(dob.getTime()) || dob.getMonth() !== mm - 1) {
+            newErrors.dateOfBirth = 'Please enter a valid date';
+          } else if (dob >= today) {
+            newErrors.dateOfBirth = 'Date of birth must be before today';
+          } else if (dob < oneHundredFiftyYearsAgo) {
+            newErrors.dateOfBirth = 'Please enter a valid date of birth';
+          }
         }
       }
 
@@ -161,8 +169,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       placeholder="First Name" 
                       value={bookingData.firstName} 
                       onChange={(e) => updateBookingData('firstName', e.target.value)} 
-                      className={`px-[20px] py-[16px] border ${errors.firstName ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                      className={`px-[20px] ${errors.firstName ? 'border-red-500' : ''} placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.firstName ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>}
                     {errors.firstName && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.firstName}</span>}
@@ -173,8 +181,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       placeholder="Middle Name" 
                       value={bookingData.middleName} 
                       onChange={(e) => updateBookingData('middleName', e.target.value)} 
-                      className={`px-[20px] py-[16px] border ${errors.middleName ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                      className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.middleName ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                     />
                     {errors.middleName && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.middleName}</span>}
                   </div>
@@ -184,8 +192,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       placeholder="Last Name" 
                       value={bookingData.lastName} 
                       onChange={(e) => updateBookingData('lastName', e.target.value)} 
-                      className={`px-[20px] py-[16px] border ${errors.lastName ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                      className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.lastName ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>}
                     {errors.lastName && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.lastName}</span>}
@@ -198,8 +206,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       <select 
                         value={bookingData.gender} 
                         onChange={(e) => updateBookingData('gender', e.target.value)} 
-                        className={`w-full px-[20px] py-[16px] border ${errors.gender ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium ${bookingData.gender ? 'text-[#242424]' : 'text-[#9f9f9f]'} focus:outline-none focus:border-cosmo-green tracking-[-0.32px] bg-white appearance-none cursor-pointer`}
-                        style={{ fontFamily: 'Manrope, sans-serif' }}
+                        className={`focus:outline-none focus:border-cosmo-green tracking-[-0.32px] bg-white appearance-none cursor-pointer px-[20px] ${bookingData.gender ? 'text-[#242424]' : 'text-[#9f9f9f]'}`}
+                        style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.gender ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                       >
                         <option value="" disabled hidden>Select Gender</option>
                         <option value="Male" className="text-[#242424]">Male</option>
@@ -219,8 +227,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       <select 
                         value={bookingData.civilStatus} 
                         onChange={(e) => updateBookingData('civilStatus', e.target.value)} 
-                        className={`w-full px-[20px] py-[16px] border ${errors.civilStatus ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium ${bookingData.civilStatus ? 'text-[#242424]' : 'text-[#9f9f9f]'} focus:outline-none focus:border-cosmo-green tracking-[-0.32px] bg-white appearance-none cursor-pointer`}
-                        style={{ fontFamily: 'Manrope, sans-serif' }}
+                        className={`focus:outline-none focus:border-cosmo-green tracking-[-0.32px] bg-white appearance-none cursor-pointer px-[20px] ${bookingData.civilStatus ? 'text-[#242424]' : 'text-[#9f9f9f]'}`}
+                        style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.civilStatus ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                       >
                         <option value="" disabled hidden>Select Civil Status</option>
                         <option value="Single" className="text-[#242424]">Single</option>
@@ -243,14 +251,19 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-[12px] mb-[22px]">
                   <div className="flex flex-col relative">
                     <input 
-                      type="date" 
-                      placeholder="Date of Birth" 
-                      value={bookingData.dateOfBirth} 
-                      onChange={(e) => updateBookingData('dateOfBirth', e.target.value)} 
-                      max={new Date().toISOString().split('T')[0]}
-                      min={new Date(new Date().getFullYear() - 150, 0, 1).toISOString().split('T')[0]}
-                      className={`px-[20px] py-[16px] border ${errors.dateOfBirth ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                      type="text"
+                      placeholder="Date of Birth"
+                      value={bookingData.dateOfBirth}
+                      onChange={(e) => {
+                        let val = e.target.value.replace(/[^0-9]/g, '');
+                        if (val.length >= 5) val = val.slice(0,4) + '-' + val.slice(4);
+                        if (val.length >= 8) val = val.slice(0,7) + '-' + val.slice(7);
+                        val = val.slice(0, 10);
+                        updateBookingData('dateOfBirth', val);
+                      }}
+                      maxLength={10}
+                      className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.dateOfBirth ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[30px] text-red-500 text-xs z-10">*</span>}
                     {errors.dateOfBirth && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.dateOfBirth}</span>}
@@ -261,8 +274,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       placeholder="Occupation" 
                       value={bookingData.occupation} 
                       onChange={(e) => updateBookingData('occupation', e.target.value)} 
-                      className={`px-[20px] py-[16px] border ${errors.occupation ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                      className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.occupation ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
                     />
                     {errors.occupation && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.occupation}</span>}
                   </div>
@@ -327,6 +340,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

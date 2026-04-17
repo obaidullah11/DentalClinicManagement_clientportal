@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(claude plugins:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "WebFetch(domain:www.w3.org)",
+      "WebFetch(domain:datatracker.ietf.org)",
+      "WebFetch(domain:owasp.org)",
+      "WebFetch(domain:cheatsheetseries.owasp.org)",
+      "WebFetch(domain:pages.nist.gov)",
+      "WebSearch",
+      "Bash(cd:*)",
+      "Bash(python:*)"
     ]
   }
 }

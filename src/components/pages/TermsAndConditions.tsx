@@ -25,15 +25,15 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ onNext, onBack 
       <Header />
       <div className="flex-1 w-full bg-white flex flex-col items-center pt-[53px] pb-[100px]">
         <h1 
-          className="text-cosmo-green text-[24px] font-bold leading-[normal] tracking-[-0.48px] text-center m-0" 
-          style={{ fontFamily: 'Manrope, sans-serif' }}
+          className="m-0 mb-[47px]" 
+          style={{ color: '#00B389', fontFamily: 'Manrope, sans-serif', fontSize: '24px', fontStyle: 'normal', fontWeight: 700, lineHeight: 'normal', letterSpacing: '-0.48px' }}
         >
           Terms and Conditions
         </h1>
 
         <div 
-          className="mt-[47px] w-full max-w-[1288px] text-[#242424] text-[18px] font-medium leading-[30px] tracking-[-0.36px] whitespace-pre-wrap px-4 lg:px-0"
-          style={{ fontFamily: 'Manrope, sans-serif' }}
+          className="w-full max-w-[1288px] px-4 lg:px-0"
+          style={{ color: '#242424', fontFamily: 'Manrope, sans-serif', fontSize: '18px', fontStyle: 'normal', fontWeight: 500, lineHeight: '30px', letterSpacing: '-0.36px' }}
           dangerouslySetInnerHTML={{ __html: termsContent }}
         />
 

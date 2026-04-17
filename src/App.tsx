@@ -209,11 +209,27 @@ const App: React.FC = () => {
             return (
               <AppointmentConfirmation
                 bookingData={bookingData}
+                onNext={() => setCurrentStep(7)}
+                onBack={() => setCurrentStep(5)}
+              />
+            );
+
+          case 7:
+            return (
+              <TermsAndConditions
+                onNext={() => setCurrentStep(8)}
+                onBack={() => setCurrentStep(6)}
+              />
+            );
+
+          case 8:
+            return (
+              <PrivacyPolicy
                 onNext={() => {
                   resetBookingData();
                   setCurrentStep(0);
                 }}
-                onBack={() => setCurrentStep(5)}
+                onBack={() => setCurrentStep(7)}
               />
             );
 

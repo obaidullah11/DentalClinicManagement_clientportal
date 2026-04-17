@@ -275,7 +275,6 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
       try {
         if (!isMounted) return;
         
-        setLoading(true);
         setError(null);
         setValidationErrors({});
 
@@ -305,10 +304,12 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           // Success response
           if (response.data && response.data.appointment && response.data.appointment.appointmentCode) {
             setAppointmentCode(response.data.appointment.appointmentCode);
+            setLoading(false);
           } else {
             // Success flag is true but missing required data
             console.error('Success response missing appointment data:', response);
             setError('Appointment submission succeeded but response data is incomplete');
+            setLoading(false);
           }
         } else if (response && response.success === false) {
           // Error response
@@ -321,19 +322,17 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
             const suggestedTimes = response.error.suggestedTimes?.join(', ') || '';
             setError(`${response.message}. Suggested times: ${suggestedTimes}`);
           }
+          setLoading(false);
         } else {
           // Unexpected response structure
           console.error('Unexpected response structure:', response);
           setError('Received an unexpected response from the server');
+          setLoading(false);
         }
       } catch (err) {
         console.error('Error submitting appointment:', err);
         if (isMounted) {
           setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-        }
-      } finally {
-        // Always stop loading, regardless of success or error
-        if (isMounted) {
           setLoading(false);
         }
       }
@@ -349,30 +348,9 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
-  // Loading state
+  // Loading state - show nothing, just submit in background
   if (loading) {
-    return (
-      <div className="min-h-screen bg-white font-sans">
-        <Header />
-        <div className="w-full bg-white">
-          <div className="w-full bg-white flex flex-col items-center justify-center p-4 lg:p-8 min-h-screen">
-            <div className="w-full max-w-md lg:max-w-lg">
-              <div className="text-center mb-8">
-                <h2 className="text-lg font-medium text-gray-800 mb-8">Cosmodental</h2>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-lg p-6 lg:p-8 shadow-sm">
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-cosmo-green rounded-lg flex items-center justify-center mx-auto mb-4 animate-pulse">
-                    <div className="w-8 h-8 bg-white rounded"></div>
-                  </div>
-                  <p className="text-sm text-gray-600">Submitting your appointment request...</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Error state
@@ -446,9 +424,9 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 
   // Success state
   return (
-    <div className="min-h-screen bg-white font-sans flex flex-col items-center">
+    <div className="min-h-screen bg-white font-sans flex flex-col">
       <Header />
-      <div className="flex-1 w-full bg-white flex flex-col items-center pt-[80px] pb-[50px]">
+      <div className="flex-1 w-full bg-white flex flex-col items-center justify-center py-[50px]">
         <div className="w-[880px] h-[620px] bg-white border border-[#d0d5dd] border-solid rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] relative">
           
           <div className="absolute left-1/2 -translate-x-1/2 top-[27px] w-[61px] h-[61px] overflow-clip">
