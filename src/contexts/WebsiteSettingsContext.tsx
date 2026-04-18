@@ -37,7 +37,8 @@ interface WebsiteSettingsProviderProps {
   children: ReactNode;
 }
 
-const API_URL = 'http://127.0.0.1:8000/api/public/website-settings';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000/api';
+const API_URL = `${API_BASE_URL}/public/website-settings`;
 
 export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = ({ children }) => {
   const [settings, setSettings] = useState<WebsiteSettings | null>(null);

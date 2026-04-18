@@ -125,24 +125,28 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     try {
       setIsLoadingSettings(true);
       setSettingsError(null);
-      console.log('Fetching clinic settings from API...');
+      console.log('🔄 Fetching clinic settings from API...');
       
       const response = await getDocumentSettings();
-      console.log('API Response:', response);
+      console.log('📦 API Response:', response);
       
       if (response.success && response.data?.clinic) {
-        console.log('Clinic settings loaded:', response.data.clinic);
+        console.log('✅ Clinic settings loaded:', response.data.clinic);
         setClinicSettings(response.data.clinic);
       } else {
-        console.error('Invalid API response structure:', response);
-        const errorMsg = 'success' in response && !response.success ? response.message : 'Failed to load clinic settings';
+        console.error('❌ Invalid API response structure:', response);
+        const errorMsg = 'success' in response && !response.success 
+          ? response.message 
+          : 'Invalid response from server';
+        console.error('Error message:', errorMsg);
         setSettingsError(errorMsg);
       }
     } catch (error) {
-      console.error('Failed to fetch clinic settings:', error);
-      setSettingsError(error instanceof Error ? error.message : 'Failed to load clinic settings');
+      console.error('💥 Exception caught:', error);
+      setSettingsError(error instanceof Error ? error.message : 'Network error occurred');
     } finally {
       setIsLoadingSettings(false);
+      console.log('🏁 Fetch complete');
     }
   };
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000/api';
+
 interface ClinicSettings {
   clinic_name: string;
   address: string;
@@ -23,7 +25,7 @@ const ClinicInfo: React.FC = () => {
 
   const fetchClinicSettings = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/public/document-settings');
+      const response = await fetch(`${API_BASE_URL}/public/document-settings`);
       const result = await response.json();
       console.log('📋 Clinic settings API response:', result);
       if (result.success && result.data?.clinic) {
