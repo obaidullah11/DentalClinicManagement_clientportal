@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
 import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
+import { getDocumentSettings, ClinicSettingsData } from '../../services/api';
 
 interface ClinicSettings {
   clinic_name: string;
@@ -40,6 +41,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   const [clinicSettings, setClinicSettings] = useState<ClinicSettings | null>(null);
   const [timeSlots, setTimeSlots] = useState<{ morning: string[], afternoon: string[] }>({ morning: [], afternoon: [] });
   const [isClinicClosed, setIsClinicClosed] = useState(false);
+  const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+  const [settingsError, setSettingsError] = useState<string | null>(null);
 
   // Fetch clinic settings on mount
   useEffect(() => {
@@ -120,13 +123,26 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   const fetchClinicSettings = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/public/document-settings');
-      const result = await response.json();
-      if (result.success && result.data?.clinic) {
-        setClinicSettings(result.data.clinic);
+      setIsLoadingSettings(true);
+      setSettingsError(null);
+      console.log('Fetching clinic settings from API...');
+      
+      const response = await getDocumentSettings();
+      console.log('API Response:', response);
+      
+      if (response.success && response.data?.clinic) {
+        console.log('Clinic settings loaded:', response.data.clinic);
+        setClinicSettings(response.data.clinic);
+      } else {
+        console.error('Invalid API response structure:', response);
+        const errorMsg = 'success' in response && !response.success ? response.message : 'Failed to load clinic settings';
+        setSettingsError(errorMsg);
       }
     } catch (error) {
       console.error('Failed to fetch clinic settings:', error);
+      setSettingsError(error instanceof Error ? error.message : 'Failed to load clinic settings');
+    } finally {
+      setIsLoadingSettings(false);
     }
   };
 
@@ -375,6 +391,17 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       <div className="text-sm text-gray-500">The clinic is not open on this day. Please select another date.</div>
                     </div>
                   </div>
+                ) : settingsError ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-red-400 mb-2">Unable to Load Time Slots</div>
+                      <div className="text-sm text-gray-500">Please refresh the page or contact support.</div>
+                    </div>
+                  </div>
+                ) : isLoadingSettings ? (
+                  <div className="text-center text-gray-500 py-8">
+                    Loading available time slots...
+                  </div>
                 ) : (
                   <div className="mb-6">
                     {timeSlots.morning.length > 0 && (
@@ -427,9 +454,9 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       </>
                     )}
 
-                    {timeSlots.morning.length === 0 && timeSlots.afternoon.length === 0 && !isClinicClosed && (
+                    {timeSlots.morning.length === 0 && timeSlots.afternoon.length === 0 && (
                       <div className="text-center text-gray-500 py-8">
-                        Loading available time slots...
+                        No time slots available for this date.
                       </div>
                     )}
                   </div>

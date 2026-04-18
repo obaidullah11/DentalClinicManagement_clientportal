@@ -343,3 +343,39 @@ export function formatTimeForAPI(time: string): string {
   return time;
 }
 
+/**
+ * Document Settings Types
+ */
+export interface WebsiteSettingsData {
+  logo_url: string;
+  primary_color: string;
+  procedure_choices: string[];
+}
+
+export interface ClinicSettingsData {
+  clinic_name: string;
+  address: string;
+  mobile_number: string;
+  telephone_number: string;
+  clinic_email: string;
+  clinic_hours_start: string;
+  clinic_hours_end: string;
+  clinic_days: string[];
+  clinic_logo_url?: string;
+}
+
+export interface DocumentSettingsData {
+  website: WebsiteSettingsData;
+  clinic: ClinicSettingsData;
+}
+
+/**
+ * Get Public Document Settings
+ * GET /api/public/document-settings
+ */
+export async function getDocumentSettings(): Promise<ApiResponse<DocumentSettingsData>> {
+  return apiRequest<DocumentSettingsData>('/public/document-settings', {
+    method: 'GET',
+  });
+}
+
