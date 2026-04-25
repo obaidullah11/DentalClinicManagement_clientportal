@@ -3,6 +3,7 @@ import ClinicInfo from '../common/ClinicInfo';
 import Header from '../common/Header';
 import { BookingData, MedicalHistory } from '../../types/BookingTypes';
 import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface MedicalHistoryProps {
   bookingData: BookingData;
@@ -23,9 +24,16 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const { settings } = useWebsiteSettings();
+  const { showToast } = useToast();
 
   const handleYesNoChange = (field: keyof MedicalHistory, value: string) => {
     updateMedicalHistory(field, value);
+    // Clear error for this field when user selects a value
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[field];
+      return newErrors;
+    });
     // Clear related errors when changing
     if (field === 'hospitalized' && value === 'No') {
       setErrors(prev => {
@@ -58,10 +66,24 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
+    
+    // Validate required Yes/No questions (1-7)
+    const requiredYesNoFields: Array<keyof MedicalHistory> = [
+      'generalHealth', 'medicalTreatment', 'services', 'hospitalized', 
+      'prescriptionMedication', 'tobacco', 'alcohol'
+    ];
+    
+    requiredYesNoFields.forEach(field => {
+      const value = bookingData.medicalHistory[field];
+      if (!value || value === '' || value === undefined || value === null) {
+        newErrors[field] = 'Required';
+      }
+    });
+
     // Validate conditional required fields
     if (bookingData.medicalHistory.hospitalized === 'Yes') {
       if (!bookingData.medicalHistory.hospitalizedWhy || !bookingData.medicalHistory.hospitalizedWhy.trim()) {
-        newErrors.hospitalizedWhy = 'Please specify when and why you were hospitalized';
+        newErrors.hospitalizedWhy = 'Required';
       } else if (bookingData.medicalHistory.hospitalizedWhy.length > 500) {
         newErrors.hospitalizedWhy = 'Response must not exceed 500 characters';
       }
@@ -69,14 +91,51 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
 
     if (bookingData.medicalHistory.prescriptionMedication === 'Yes') {
       if (!bookingData.medicalHistory.prescriptionSpecify || !bookingData.medicalHistory.prescriptionSpecify.trim()) {
-        newErrors.prescriptionSpecify = 'Please specify the medication you are taking';
+        newErrors.prescriptionSpecify = 'Required';
       } else if (bookingData.medicalHistory.prescriptionSpecify.length > 500) {
         newErrors.prescriptionSpecify = 'Response must not exceed 500 characters';
       }
     }
 
-    // Validate blood pressure format if provided
-    if (bookingData.medicalHistory.bloodPressure && bookingData.medicalHistory.bloodPressure.trim()) {
+    // Validate bleeding time (Question 9)
+    if (!bookingData.medicalHistory.bleedingTime || !bookingData.medicalHistory.bleedingTime.trim()) {
+      newErrors.bleedingTime = 'Required';
+    } else if (bookingData.medicalHistory.bleedingTime.length > 100) {
+      newErrors.bleedingTime = 'Response must not exceed 100 characters';
+    }
+
+    // Validate allergies (Question 8) - at least one allergy should be selected
+    const allergicItems = bookingData.medicalHistory.allergicItems;
+    if (!allergicItems || Object.values(allergicItems).every(value => !value)) {
+      newErrors.allergies = 'Required';
+    }
+
+    // Validate for women only (Question 10) - only if patient is female
+    if (bookingData.gender === 'Female') {
+      const forWomenOnly = bookingData.medicalHistory.forWomenOnly;
+      if (!forWomenOnly.pregnant || !forWomenOnly.nursing || !forWomenOnly.birthControl || 
+          forWomenOnly.pregnant === '' || forWomenOnly.nursing === '' || forWomenOnly.birthControl === '') {
+        newErrors.forWomenOnly = 'Required';
+      }
+    }
+
+    // Validate medical conditions (Question 13) - at least one condition should be selected
+    const followingConditions = bookingData.medicalHistory.followingConditions;
+    if (!followingConditions || followingConditions.length === 0) {
+      newErrors.followingConditions = 'Required';
+    }
+
+    // Validate blood type (Question 11) - required field
+    if (!bookingData.medicalHistory.bloodType || !bookingData.medicalHistory.bloodType.trim()) {
+      newErrors.bloodType = 'Required';
+    } else if (bookingData.medicalHistory.bloodType.length > 20) {
+      newErrors.bloodType = 'Blood type must not exceed 20 characters';
+    }
+
+    // Validate blood pressure (Question 12) - required field
+    if (!bookingData.medicalHistory.bloodPressure || !bookingData.medicalHistory.bloodPressure.trim()) {
+      newErrors.bloodPressure = 'Required';
+    } else {
       const bpPattern = /^\d{2,3}\/\d{2}$/;
       if (!bpPattern.test(bookingData.medicalHistory.bloodPressure.trim())) {
         newErrors.bloodPressure = 'Invalid format. Use XXX/XX (e.g., 120/80)';
@@ -116,6 +175,8 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
   const handleNext = () => {
     if (validateForm()) {
       onNext();
+    } else {
+      showToast('Please answer all required questions', 'error');
     }
   };
 
@@ -133,6 +194,15 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
       ...currentItems,
       [item]: checked
     });
+
+    // Clear allergies error when user selects any allergy
+    if (checked) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.allergies;
+        return newErrors;
+      });
+    }
   };
 
   const handleWomenOnlyChange = (field: keyof MedicalHistory['forWomenOnly'], value: string) => {
@@ -146,6 +216,15 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
       ...currentWomenOnly,
       [field]: value
     });
+
+    // Clear forWomenOnly error when user answers any field
+    if (value) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.forWomenOnly;
+        return newErrors;
+      });
+    }
   };
 
   const handleConditionChange = (condition: string, checked: boolean) => {
@@ -153,6 +232,13 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
     
     if (checked) {
       updateMedicalHistory('followingConditions', [...currentConditions, condition]);
+      
+      // Clear followingConditions error when user selects any condition
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.followingConditions;
+        return newErrors;
+      });
     } else {
       updateMedicalHistory('followingConditions', currentConditions.filter(c => c !== condition));
     }
@@ -174,7 +260,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                 value="Yes"
                 checked={bookingData.medicalHistory[field] === 'Yes'}
                 onChange={(e) => handleYesNoChange(field, e.target.value)}
-                className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                className={`w-[18px] h-[18px] ${errors[field] ? 'border-red-500' : 'text-cosmo-green focus:ring-cosmo-green'} border-[#e8e8e8]`}
               />
               <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
             </label>
@@ -185,11 +271,14 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                 value="No"
                 checked={bookingData.medicalHistory[field] === 'No'}
                 onChange={(e) => handleYesNoChange(field, e.target.value)}
-                className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                className={`w-[18px] h-[18px] ${errors[field] ? 'border-red-500' : 'text-cosmo-green focus:ring-cosmo-green'} border-[#e8e8e8]`}
               />
               <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
             </label>
           </div>
+          {errors[field] && (
+            <span className="text-red-500 text-xs mt-1 block">{errors[field]}</span>
+          )}
         </div>
       </div>
     </div>
@@ -226,271 +315,107 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
 
               {/* Question 2 */}
               <div className="mb-[30px]">
-                <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    2
+                <YesNoRadio 
+                  field="medicalTreatment" 
+                  question="Are you under medical treatment now?" 
+                  number={2} 
+                />
+                {bookingData.medicalHistory.medicalTreatment === 'Yes' && (
+                  <div className="mt-[15px] ml-[40px]">
+                    <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, what is the condition being treated?</p>
+                    <input
+                      type="text"
+                      placeholder="State your answer here..."
+                      value={bookingData.medicalHistory.medicalCondition || ''}
+                      onChange={(e) => handleTextChange('medicalCondition', e.target.value)}
+                      className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]"
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-[16px] font-normal text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>2. Are you under medical treatment now?</p>
-                    <div className="flex gap-[40px] mb-[15px]">
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="medicalTreatment"
-                          value="Yes"
-                          checked={bookingData.medicalHistory.medicalTreatment === 'Yes'}
-                          onChange={(e) => handleYesNoChange('medicalTreatment', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
-                      </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="medicalTreatment"
-                          value="No"
-                          checked={bookingData.medicalHistory.medicalTreatment === 'No'}
-                          onChange={(e) => handleYesNoChange('medicalTreatment', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
-                      </label>
-                    </div>
-                    {bookingData.medicalHistory.medicalTreatment === 'Yes' && (
-                      <div className="mt-[15px]">
-                        <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, what is the condition being treated?</p>
-                        <input
-                          type="text"
-                          placeholder="State your answer here..."
-                          value={bookingData.medicalHistory.medicalCondition || ''}
-                          onChange={(e) => handleTextChange('medicalCondition', e.target.value)}
-                          className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]"
-                          style={{ fontFamily: 'Manrope, sans-serif' }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Question 3 */}
               <div className="mb-[30px]">
-                <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    3
+                <YesNoRadio 
+                  field="services" 
+                  question="Have you ever had serious illness or surgical operation?" 
+                  number={3} 
+                />
+                {bookingData.medicalHistory.services === 'Yes' && (
+                  <div className="mt-[15px] ml-[40px]">
+                    <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, what illness or operation?</p>
+                    <input
+                      type="text"
+                      placeholder="State your answer here..."
+                      value={bookingData.medicalHistory.services || ''}
+                      onChange={(e) => handleTextChange('services', e.target.value)}
+                      className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]"
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-[16px] font-normal text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>3. Have you ever had serious illness or surgical operation?</p>
-                    <div className="flex gap-[40px] mb-[15px]">
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="services"
-                          value="Yes"
-                          checked={bookingData.medicalHistory.services === 'Yes'}
-                          onChange={(e) => handleYesNoChange('services', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
-                      </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="services"
-                          value="No"
-                          checked={bookingData.medicalHistory.services === 'No'}
-                          onChange={(e) => handleYesNoChange('services', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
-                      </label>
-                    </div>
-                    {bookingData.medicalHistory.services === 'Yes' && (
-                      <div className="mt-[15px]">
-                        <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, what illness or operation?</p>
-                        <input
-                          type="text"
-                          placeholder="State your answer here..."
-                          className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]"
-                          style={{ fontFamily: 'Manrope, sans-serif' }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Question 4 */}
               <div className="mb-[30px]">
-                <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    4
+                <YesNoRadio 
+                  field="hospitalized" 
+                  question="Have you ever been hospitalized?" 
+                  number={4} 
+                />
+                {bookingData.medicalHistory.hospitalized === 'Yes' && (
+                  <div className="mt-[15px] ml-[40px]">
+                    <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, when and why?</p>
+                    <input
+                      type="text"
+                      placeholder="State your answer here..."
+                      value={bookingData.medicalHistory.hospitalizedWhy || ''}
+                      onChange={(e) => handleTextChange('hospitalizedWhy', e.target.value)}
+                      className={`w-full px-[20px] py-[16px] border ${errors.hospitalizedWhy ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]`}
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    />
+                    {errors.hospitalizedWhy && <span className="text-red-500 text-xs mt-1 block">{errors.hospitalizedWhy}</span>}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-[16px] font-normal text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>4. Have you ever been hospitalized?</p>
-                    <div className="flex gap-[40px] mb-[15px]">
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="hospitalized"
-                          value="Yes"
-                          checked={bookingData.medicalHistory.hospitalized === 'Yes'}
-                          onChange={(e) => handleYesNoChange('hospitalized', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
-                      </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="hospitalized"
-                          value="No"
-                          checked={bookingData.medicalHistory.hospitalized === 'No'}
-                          onChange={(e) => handleYesNoChange('hospitalized', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
-                      </label>
-                    </div>
-                    {bookingData.medicalHistory.hospitalized === 'Yes' && (
-                      <div className="mt-[15px]">
-                        <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, when and why?</p>
-                        <input
-                          type="text"
-                          placeholder="State your answer here..."
-                          value={bookingData.medicalHistory.hospitalizedWhy || ''}
-                          onChange={(e) => handleTextChange('hospitalizedWhy', e.target.value)}
-                          className={`w-full px-[20px] py-[16px] border ${errors.hospitalizedWhy ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]`}
-                          style={{ fontFamily: 'Manrope, sans-serif' }}
-                        />
-                        {errors.hospitalizedWhy && <span className="text-red-500 text-xs mt-1 block">{errors.hospitalizedWhy}</span>}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Question 5 */}
               <div className="mb-[30px]">
-                <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    5
+                <YesNoRadio 
+                  field="prescriptionMedication" 
+                  question="Are you taking any prescription/non-prescription medication?" 
+                  number={5} 
+                />
+                {bookingData.medicalHistory.prescriptionMedication === 'Yes' && (
+                  <div className="mt-[15px] ml-[40px]">
+                    <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, please specify</p>
+                    <input
+                      type="text"
+                      placeholder="State your answer here..."
+                      value={bookingData.medicalHistory.prescriptionSpecify || ''}
+                      onChange={(e) => handleTextChange('prescriptionSpecify', e.target.value)}
+                      className={`w-full px-[20px] py-[16px] border ${errors.prescriptionSpecify ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]`}
+                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    />
+                    {errors.prescriptionSpecify && <span className="text-red-500 text-xs mt-1 block">{errors.prescriptionSpecify}</span>}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-[16px] font-normal text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>5. Are you taking any prescription/non-prescription medication?</p>
-                    <div className="flex gap-[40px] mb-[15px]">
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="prescriptionMedication"
-                          value="Yes"
-                          checked={bookingData.medicalHistory.prescriptionMedication === 'Yes'}
-                          onChange={(e) => handleYesNoChange('prescriptionMedication', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
-                      </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="prescriptionMedication"
-                          value="No"
-                          checked={bookingData.medicalHistory.prescriptionMedication === 'No'}
-                          onChange={(e) => handleYesNoChange('prescriptionMedication', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
-                      </label>
-                    </div>
-                    {bookingData.medicalHistory.prescriptionMedication === 'Yes' && (
-                      <div className="mt-[15px]">
-                        <p className="text-[14px] text-[#303030] mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>If so, please specify</p>
-                        <input
-                          type="text"
-                          placeholder="State your answer here..."
-                          value={bookingData.medicalHistory.prescriptionSpecify || ''}
-                          onChange={(e) => handleTextChange('prescriptionSpecify', e.target.value)}
-                          className={`w-full px-[20px] py-[16px] border ${errors.prescriptionSpecify ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]`}
-                          style={{ fontFamily: 'Manrope, sans-serif' }}
-                        />
-                        {errors.prescriptionSpecify && <span className="text-red-500 text-xs mt-1 block">{errors.prescriptionSpecify}</span>}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Question 6 */}
-              <div className="mb-[30px]">
-                <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    6
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[16px] font-normal text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>6. Do you use tobacco products?</p>
-                    <div className="flex gap-[40px]">
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="tobacco"
-                          value="Yes"
-                          checked={bookingData.medicalHistory.tobacco === 'Yes'}
-                          onChange={(e) => handleYesNoChange('tobacco', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
-                      </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="tobacco"
-                          value="No"
-                          checked={bookingData.medicalHistory.tobacco === 'No'}
-                          onChange={(e) => handleYesNoChange('tobacco', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <YesNoRadio 
+                field="tobacco" 
+                question="Do you use tobacco products?" 
+                number={6} 
+              />
 
               {/* Question 7 */}
-              <div className="mb-[30px]">
-                <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    7
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[16px] font-normal text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>7. Do you use alcohol, cocaine or other dangerous drugs?</p>
-                    <div className="flex gap-[40px]">
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="alcohol"
-                          value="Yes"
-                          checked={bookingData.medicalHistory.alcohol === 'Yes'}
-                          onChange={(e) => handleYesNoChange('alcohol', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
-                      </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="radio"
-                          name="alcohol"
-                          value="No"
-                          checked={bookingData.medicalHistory.alcohol === 'No'}
-                          onChange={(e) => handleYesNoChange('alcohol', e.target.value)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
-                        />
-                        <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <YesNoRadio 
+                field="alcohol" 
+                question="Do you use alcohol, cocaine or other dangerous drugs?" 
+                number={7} 
+              />
 
               {/* Question 8 - Allergies */}
               <div className="mb-[30px]">
@@ -556,6 +481,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                         <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Others</span>
                       </label>
                     </div>
+                    {errors.allergies && (
+                      <span className="text-red-500 text-xs mt-1 block">{errors.allergies}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -573,9 +501,10 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                       placeholder="State your answer here..."
                       value={bookingData.medicalHistory.bleedingTime || ''}
                       onChange={(e) => handleTextChange('bleedingTime', e.target.value)}
-                      className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]"
+                      className={`w-full px-[20px] py-[16px] border ${errors.bleedingTime ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]`}
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     />
+                    {errors.bleedingTime && <span className="text-red-500 text-xs mt-1 block">{errors.bleedingTime}</span>}
                   </div>
                 </div>
               </div>
@@ -628,7 +557,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="Yes"
                               checked={bookingData.medicalHistory.forWomenOnly?.nursing === 'Yes'}
                               onChange={(e) => handleWomenOnlyChange('nursing', e.target.value)}
-                              className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                              className={`w-[18px] h-[18px] ${errors.forWomenOnly ? 'border-red-500' : 'text-cosmo-green focus:ring-cosmo-green'} border-[#e8e8e8]`}
                             />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
                           </label>
@@ -639,7 +568,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="No"
                               checked={bookingData.medicalHistory.forWomenOnly?.nursing === 'No'}
                               onChange={(e) => handleWomenOnlyChange('nursing', e.target.value)}
-                              className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                              className={`w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]`}
                             />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
                           </label>
@@ -656,7 +585,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="Yes"
                               checked={bookingData.medicalHistory.forWomenOnly?.birthControl === 'Yes'}
                               onChange={(e) => handleWomenOnlyChange('birthControl', e.target.value)}
-                              className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                              className={`w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]`}
                             />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
                           </label>
@@ -667,12 +596,16 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="No"
                               checked={bookingData.medicalHistory.forWomenOnly?.birthControl === 'No'}
                               onChange={(e) => handleWomenOnlyChange('birthControl', e.target.value)}
-                              className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                              className={`w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]`}
                             />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
                           </label>
                         </div>
                       </div>
+                      
+                      {errors.forWomenOnly && (
+                        <span className="text-red-500 text-xs mt-1 block">{errors.forWomenOnly}</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -691,9 +624,10 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                       placeholder="State your answer here..."
                       value={bookingData.medicalHistory.bloodType || ''}
                       onChange={(e) => handleTextChange('bloodType', e.target.value)}
-                      className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]"
+                      className={`w-full px-[20px] py-[16px] border ${errors.bloodType ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]`}
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     />
+                    {errors.bloodType && <span className="text-red-500 text-xs mt-1 block">{errors.bloodType}</span>}
                   </div>
                 </div>
               </div>
@@ -753,6 +687,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                         </label>
                       ))}
                     </div>
+                    {errors.followingConditions && (
+                      <span className="text-red-500 text-xs mt-1 block">{errors.followingConditions}</span>
+                    )}
                   </div>
                 </div>
               </div>

@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'cosmo-green': 'var(--primary-color, #00B389)',
+        'cosmo-green': 'var(--primary-color, #6b7280)',
       },
       spacing: {
         '15': '3.75rem',

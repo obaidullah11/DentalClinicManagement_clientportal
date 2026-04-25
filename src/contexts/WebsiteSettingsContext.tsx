@@ -10,6 +10,7 @@ export interface WebsiteSettings {
   procedure_choices: string[];
   terms_and_conditions: string;
   privacy_policy: string;
+  hidden_steps: number[];
   created_at: string;
   updated_at: string;
   created_by: number;
@@ -50,8 +51,7 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
       setLoading(true);
       setError(null);
       
-      // Set default primary color immediately
-      document.documentElement.style.setProperty('--primary-color', '#00B389');
+      // Don't set any color immediately - let the cached color or neutral default handle it
       
       // Create AbortController for timeout
       const controller = new AbortController();
@@ -80,6 +80,8 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
           // Update CSS variable for primary color dynamically
           if (result.data.primary_color) {
             document.documentElement.style.setProperty('--primary-color', result.data.primary_color);
+            // Cache the color to prevent flash on next page load
+            localStorage.setItem('cachedPrimaryColor', result.data.primary_color);
             console.log('✅ Dynamic color loaded:', result.data.primary_color);
           }
         } else {
@@ -98,16 +100,22 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
       setError(errorMessage);
       console.warn('⚠️ Website settings not loaded, using defaults:', errorMessage);
       
-      // Keep default primary color on error
-      document.documentElement.style.setProperty('--primary-color', '#00B389');
+      // Keep neutral primary color on error
+      document.documentElement.style.setProperty('--primary-color', '#6b7280');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Set default color immediately before fetching
-    document.documentElement.style.setProperty('--primary-color', '#00B389');
+    // Try to get cached color first to prevent flash
+    const cachedColor = localStorage.getItem('cachedPrimaryColor');
+    if (cachedColor) {
+      document.documentElement.style.setProperty('--primary-color', cachedColor);
+    } else {
+      // Set neutral default color only if no cached color exists
+      document.documentElement.style.setProperty('--primary-color', '#6b7280');
+    }
     
     // Fetch settings in background
     fetchSettings();

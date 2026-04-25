@@ -50,11 +50,22 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
 
   const handlePatientTypeChange = (type: string) => {
     updateBookingData('patientType', type);
+    // Reset reason for visit when patient type changes
+    updateBookingData('reason', '');
+    setOthersText(''); // Clear the "Others" text input as well
     // Clear error when user selects
     if (errors.patientType) {
       setErrors(prev => {
         const newErrors = { ...prev };
         delete newErrors.patientType;
+        return newErrors;
+      });
+    }
+    // Clear reason error when patient type changes
+    if (errors.reason) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.reason;
         return newErrors;
       });
     }
