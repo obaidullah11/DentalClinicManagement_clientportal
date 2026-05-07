@@ -59,7 +59,11 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
       const date = new Date(selectedYear, selectedMonth, selectedDate);
       const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
       const dayOfWeek = dayNames[date.getDay()];
-      const isOpen = clinicSettings.clinic_days.includes(dayOfWeek);
+      
+      // Safety check for clinic_days array
+      const isOpen = clinicSettings.clinic_days && Array.isArray(clinicSettings.clinic_days) 
+        ? clinicSettings.clinic_days.includes(dayOfWeek) 
+        : false;
       
       console.log('Day of week:', dayOfWeek, 'Is open:', isOpen);
       
