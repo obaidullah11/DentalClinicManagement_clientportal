@@ -157,7 +157,13 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   const validateAppointmentDate = (dateStr: string): boolean => {
     setError('');
     
+    console.log('🔍 Date Validation Debug:');
+    console.log('  Input dateStr:', JSON.stringify(dateStr));
+    console.log('  dateStr type:', typeof dateStr);
+    console.log('  dateStr length:', dateStr?.length);
+    
     if (!dateStr) {
+      console.log('  ❌ No date string provided');
       setError('Please select an appointment date');
       return false;
     }
@@ -166,20 +172,51 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     let appointmentDate: Date;
     
     if (dateStr.toLowerCase().includes('today')) {
+      console.log('  📅 Processing "today" date');
       appointmentDate = new Date();
       appointmentDate.setHours(0, 0, 0, 0);
     } else {
-      // Parse "October 2, 2025" format
-      const match = dateStr.match(/(\w+)\s+(\d+),?\s+(\d{4})/);
-      if (match) {
+      console.log('  📅 Processing date format');
+      
+      // Try ISO format first: "2026-05-07"
+      const isoMatch = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+      if (isoMatch) {
+        console.log('  ✅ ISO format detected');
+        const [, year, month, day] = isoMatch;
+        appointmentDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        appointmentDate.setHours(0, 0, 0, 0);
+        console.log('  📅 Created appointmentDate from ISO:', appointmentDate.toISOString());
+      } else {
+        console.log('  📅 Trying text format');
+        // Parse "October 2, 2025" format
+        const match = dateStr.match(/(\w+)\s+(\d+),?\s+(\d{4})/);
+        console.log('  Regex match result:', match);
+        if (match) {
         const [, monthName, day, year] = match;
+        console.log('  Extracted - monthName:', monthName, 'day:', day, 'year:', year);
         const monthNames = ['january', 'february', 'march', 'april', 'may', 'june',
                            'july', 'august', 'september', 'october', 'november', 'december'];
-        const monthIndex = monthNames.findIndex(m => m.startsWith(monthName.toLowerCase()));
+        let monthIndex = monthNames.findIndex(m => m.startsWith(monthName.toLowerCase()));
+        console.log('  📅 Month matching (lowercase):');
+        console.log('    monthName.toLowerCase():', monthName.toLowerCase());
+        console.log('    monthIndex result:', monthIndex);
+        
+        // If not found in lowercase, try exact match (case-insensitive)
+        if (monthIndex === -1) {
+          console.log('  🔍 Trying case-insensitive match...');
+          const capitalizedMonths = ['January', 'February', 'March', 'April', 'May', 'June',
+                                'July', 'August', 'September', 'October', 'November', 'December'];
+          const updatedMonthIndex = capitalizedMonths.findIndex(m => m.toLowerCase() === monthName.toLowerCase());
+          console.log('    updatedMonthIndex result:', updatedMonthIndex);
+          monthIndex = updatedMonthIndex;
+        }
+        console.log('  ✅ Final monthIndex:', monthIndex);
         if (monthIndex !== -1) {
           appointmentDate = new Date(parseInt(year), monthIndex, parseInt(day));
           appointmentDate.setHours(0, 0, 0, 0);
+          console.log('  📅 Created appointmentDate:', appointmentDate.toISOString());
         } else {
+          console.log('  ❌ Month not found, showing error');
           setError('Invalid date format');
           return false;
         }
@@ -187,6 +224,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
         setError('Invalid date format');
         return false;
       }
+    }
     }
 
     const today = new Date();
@@ -252,11 +290,17 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
   };
 
   const handleDateSelect = (date: number) => {
+    console.log('🗓️ handleDateSelect called:');
+    console.log('  Selected date number:', date);
+    console.log('  Current month:', currentMonth, 'Current year:', currentYear);
+    
     setSelectedDate(date);
     setSelectedMonth(currentMonth);
     setSelectedYear(currentYear);
     const monthName = months[currentMonth];
     const dateStr = `${monthName} ${date}, ${currentYear}`;
+    
+    console.log('  Generated dateStr:', dateStr);
     updateBookingData('selectedDate', dateStr);
     setError(''); // Clear error when date is selected
   };
@@ -284,6 +328,24 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     }
     
     return buttons;
+  };
+
+  const handleCalendarDateSelect = (buttonDate: Date) => {
+    console.log('🗓️ handleCalendarDateSelect called:');
+    console.log('  Button date:', buttonDate.toISOString());
+    console.log('  Button date.getDate():', buttonDate.getDate());
+    console.log('  Button date.getMonth():', buttonDate.getMonth());
+    console.log('  Button date.getFullYear():', buttonDate.getFullYear());
+    
+    setSelectedDate(buttonDate.getDate());
+    setSelectedMonth(buttonDate.getMonth());
+    setSelectedYear(buttonDate.getFullYear());
+    const monthName = months[buttonDate.getMonth()];
+    const dateStr = `${monthName} ${buttonDate.getDate()}, ${buttonDate.getFullYear()}`;
+    
+    console.log('  Generated dateStr:', dateStr);
+    updateBookingData('selectedDate', dateStr);
+    setError(''); // Clear error when date is selected
   };
 
   const handleDateButtonClick = (buttonDate: Date) => {
