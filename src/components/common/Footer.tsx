@@ -1,6 +1,10 @@
 import React from 'react';
+import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 
 const Footer: React.FC = () => {
+  const { settings } = useWebsiteSettings();
+  const clinicName = settings?.clinic_name || 'Cosmodental';
+  
   return (
     <div className="w-full flex flex-col items-center">
       <div style={{ width: '1241px', height: '1px', background: '#DDD', maxWidth: '100%' }} />
@@ -10,7 +14,7 @@ const Footer: React.FC = () => {
             Branding and Contents by
           </span>
           <span style={{ color: '#2A2A2A', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 700, lineHeight: 'normal', letterSpacing: '-0.32px' }}>
-            Cosmodental
+            {clinicName}
           </span>
         </div>
         <div className="flex flex-col gap-[2px] items-end">
@@ -18,7 +22,7 @@ const Footer: React.FC = () => {
             Brought to you by
           </span>
           <span style={{ color: '#2A2A2A', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 700, lineHeight: 'normal', letterSpacing: '-0.32px' }}>
-            © 2025, Cosmodental powered by Reserva
+            © 2025, {clinicName} powered by Reserva
           </span>
         </div>
       </div>

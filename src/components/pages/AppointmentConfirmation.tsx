@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import Header from '../common/Header';
+import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 import { BookingData } from '../../types/BookingTypes';
 import { 
   submitAppointment, 
@@ -15,6 +16,8 @@ interface AppointmentConfirmationProps {
 }
 
 const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ bookingData, onNext, onBack }) => {
+  const { settings } = useWebsiteSettings();
+  const clinicName = settings?.clinic_name || 'Cosmodental';
   const [loading, setLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [submitting, setSubmitting] = useState(false);
@@ -357,7 +360,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           <div className="w-full bg-white flex flex-col items-center justify-center p-4 lg:p-8 min-h-screen">
             <div className="w-full max-w-md lg:max-w-lg">
               <div className="text-center mb-8">
-                <h2 className="text-lg font-medium text-gray-800 mb-8">Cosmodental</h2>
+                <h2 className="text-lg font-medium text-gray-800 mb-8">{clinicName}</h2>
               </div>
               <div className="bg-white border border-red-200 rounded-lg p-6 lg:p-8 shadow-sm">
                 <div className="text-center mb-6">

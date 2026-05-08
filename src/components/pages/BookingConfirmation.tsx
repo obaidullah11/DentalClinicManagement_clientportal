@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 import ClinicInfo from '../common/ClinicInfo';
 import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
@@ -16,6 +17,8 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
   onNext,
   onBack
 }) => {
+  const { settings } = useWebsiteSettings();
+  const clinicName = settings?.clinic_name || 'Cosmodental';
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -148,7 +151,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
               
               <div className="mb-[30px]">
                 <h3 className="text-[20px] font-bold text-[#242424] mb-[15px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                  How Did you know about Cosmodental? <span className="text-red-500">*</span>
+                  How Did you know about {clinicName}? <span className="text-red-500">*</span>
                 </h3>
                 <div className="relative" ref={dropdownRef}>
                   <button

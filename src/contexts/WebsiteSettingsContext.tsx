@@ -15,6 +15,12 @@ export interface WebsiteSettings {
   updated_at: string;
   created_by: number;
   created_by_name: string;
+  // Clinic settings
+  clinic_name?: string;
+  address?: string;
+  mobile_number?: string;
+  telephone_number?: string;
+  clinic_email?: string;
 }
 
 interface WebsiteSettingsContextType {
@@ -39,7 +45,7 @@ interface WebsiteSettingsProviderProps {
 }
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000/api';
-const API_URL = `${API_BASE_URL}/public/website-settings`;
+const API_URL = `${API_BASE_URL}/public/document-settings`;
 
 export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = ({ children }) => {
   const [settings, setSettings] = useState<WebsiteSettings | null>(null);
@@ -75,14 +81,24 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
         const result = await response.json();
         
         if (result.success && result.data) {
-          setSettings(result.data);
+          // Merge website and clinic settings
+          const mergedSettings = {
+            ...result.data.website,
+            clinic_name: result.data.clinic?.clinic_name,
+            address: result.data.clinic?.address,
+            mobile_number: result.data.clinic?.mobile_number,
+            telephone_number: result.data.clinic?.telephone_number,
+            clinic_email: result.data.clinic?.clinic_email,
+          };
+          
+          setSettings(mergedSettings);
           
           // Update CSS variable for primary color dynamically
-          if (result.data.primary_color) {
-            document.documentElement.style.setProperty('--primary-color', result.data.primary_color);
+          if (result.data.website?.primary_color) {
+            document.documentElement.style.setProperty('--primary-color', result.data.website.primary_color);
             // Cache the color to prevent flash on next page load
-            localStorage.setItem('cachedPrimaryColor', result.data.primary_color);
-            console.log('✅ Dynamic color loaded:', result.data.primary_color);
+            localStorage.setItem('cachedPrimaryColor', result.data.website.primary_color);
+            console.log('✅ Dynamic color loaded:', result.data.website.primary_color);
           }
         } else {
           throw new Error(result.message || 'Failed to load website settings');

@@ -41,10 +41,10 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBooking }) => {
 
           <div className="pt-[90px] pb-[50px]">
             <h1 className="mb-[8px]" style={{ color: '#242424', fontFamily: 'Inter, sans-serif', fontSize: '42px', fontStyle: 'normal', fontWeight: 700, lineHeight: '43px', letterSpacing: '-0.84px' }}>
-              Book your appointment at<br />Cosmodental today!
+              Book your appointment at<br />{settings?.clinic_name || 'Cosmodental'} today!
             </h1>
             <p className="mb-[47px]" style={{ color: 'rgba(0, 0, 0, 0.60)', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 400, lineHeight: 'normal', letterSpacing: '-0.32px' }}>
-              Skip the wait and enjoy your Cosmodental treatments. Book your appointment<br />in advance for a smooth and hassle-free dental experience!
+              Skip the wait and enjoy your {settings?.clinic_name || 'Cosmodental'} treatments. Book your appointment<br />in advance for a smooth and hassle-free dental experience!
             </p>
             <button 
               onClick={onStartBooking} 

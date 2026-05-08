@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 import ClinicInfo from '../common/ClinicInfo';
 import Header from '../common/Header';
 import { BookingData } from '../../types/BookingTypes';
@@ -16,6 +17,8 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({
   onNext,
   onBack
 }) => {
+  const { settings } = useWebsiteSettings();
+  const clinicName = settings?.clinic_name || 'Cosmodental';
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -96,7 +99,7 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({
               </div>
               
               <div className="mb-8">
-                <h3 className="text-base font-medium text-gray-800 mb-4">How Did you know about Cosmodental?</h3>
+                <h3 className="text-base font-medium text-gray-800 mb-4">How Did you know about {clinicName}?</h3>
                 <div className="relative" ref={dropdownRef}>
                   <button
                     type="button"
