@@ -11,10 +11,11 @@ import BookingConfirmation from './components/pages/BookingConfirmation';
 import AppointmentConfirmation from './components/pages/AppointmentConfirmation';
 import TermsAndConditions from './components/pages/TermsAndConditions';
 import PrivacyPolicy from './components/pages/PrivacyPolicy';
+import BookingDisabled from './components/pages/BookingDisabled';
 
 // Inner component that uses contexts
 const AppContent: React.FC = () => {
-  const { settings } = useWebsiteSettings();
+  const { settings, loading } = useWebsiteSettings();
   const { showToast } = useToast();
   
   // Get current step from localStorage or default to 0
@@ -153,6 +154,14 @@ const AppContent: React.FC = () => {
     notes: '',
     reason: ''
   });
+
+  // Check if online booking is disabled
+  const isBookingDisabled = settings?.allow_online_booking === false;
+  
+  // Show BookingDisabled page if online booking is disabled
+  if (!loading && isBookingDisabled) {
+    return <BookingDisabled />;
+  }
 
   // Update functions for booking data
   const updateBookingData = (field: keyof BookingData, value: any) => {
