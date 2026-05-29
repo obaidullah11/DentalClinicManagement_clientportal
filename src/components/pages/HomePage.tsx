@@ -27,16 +27,14 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBooking }) => {
         </div>
         
         <div className="w-full max-w-[1242px] px-4 lg:px-0 relative">
-          {/* Logo overlapping the image - 126×126px container with 8px padding */}
+          {/* Logo overlapping the image */}
           <div className="absolute top-[-68px]">
-            <div className="w-[126px] h-[126px] bg-cosmo-green rounded-[16.8px] flex items-center justify-center p-2">
-              <img 
-                src={showLogoImage ? logoUrl : "/images/cosmo-dental-logo-1.png"}
-                alt="Cosmo Dental Logo"
-                className="max-w-full max-h-full object-contain"
-                onError={() => setLogoError(true)}
-              />
-            </div>
+            <img
+              src={showLogoImage ? logoUrl : "/images/cosmo-dental-logo-1.png"}
+              alt="Cosmo Dental Logo"
+              className="max-w-[126px] max-h-[126px] object-contain block"
+              onError={() => setLogoError(true)}
+            />
           </div>
 
           <div className="pt-[90px] pb-[50px]">

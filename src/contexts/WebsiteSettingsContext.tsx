@@ -90,7 +90,7 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
             mobile_number: result.data.clinic?.mobile_number,
             telephone_number: result.data.clinic?.telephone_number,
             clinic_email: result.data.clinic?.clinic_email,
-            allow_online_booking: result.data.clinic?.allow_online_booking ?? true,
+            allow_online_booking: result.data.clinic?.allow_online_booking ?? false,
           };
           
           setSettings(mergedSettings);

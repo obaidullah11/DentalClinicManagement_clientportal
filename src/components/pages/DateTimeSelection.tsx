@@ -114,11 +114,13 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
       }
 
       const morning = slots.filter(slot => {
-        const isPM = slot.includes('PM');
-        const hour = parseInt(slot.split(':')[0]);
-        return !isPM || (isPM && hour === 12);
+        const isAM = slot.includes('AM');
+        return isAM;
       });
-      const afternoon = slots.filter(slot => !morning.includes(slot));
+      const afternoon = slots.filter(slot => {
+        const isPM = slot.includes('PM');
+        return isPM;
+      });
 
       console.log('Generated slots - Morning:', morning.length, 'Afternoon:', afternoon.length);
       setTimeSlots({ morning, afternoon });
