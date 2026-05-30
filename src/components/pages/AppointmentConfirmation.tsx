@@ -350,9 +350,35 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
-  // Loading state - show nothing, just submit in background
+  // Loading state - show spinner while submitting
   if (loading) {
-    return null;
+    return (
+      <div className="min-h-screen bg-white font-sans flex flex-col">
+        <Header />
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center gap-6">
+            <div
+              className="w-16 h-16 rounded-full border-4 border-gray-200 animate-spin"
+              style={{ borderTopColor: 'var(--primary-color, #6b7280)' }}
+            />
+            <div className="text-center">
+              <p
+                className="text-[18px] font-semibold text-[#242424] mb-1"
+                style={{ fontFamily: 'Manrope, sans-serif' }}
+              >
+                Submitting your appointment...
+              </p>
+              <p
+                className="text-[14px] text-[#6b7280]"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                Please wait while we process your request.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Error state
