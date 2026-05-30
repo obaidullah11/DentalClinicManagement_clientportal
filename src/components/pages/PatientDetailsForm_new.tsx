@@ -68,6 +68,15 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
       newErrors.occupation = 'Occupation must not exceed 200 characters';
     }
 
+    // Email validation (required for all patient types)
+    if (!bookingData.emailAddress.trim()) {
+      newErrors.emailAddress = 'Email Address is required';
+    } else if (bookingData.emailAddress.length > 255) {
+      newErrors.emailAddress = 'Email must not exceed 255 characters';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingData.emailAddress)) {
+      newErrors.emailAddress = 'Please enter a valid email address';
+    }
+
     if (bookingData.patientType === 'New') {
       // Gender validation
       if (!bookingData.gender) {
@@ -102,15 +111,6 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
             newErrors.dateOfBirth = 'Please enter a valid date of birth';
           }
         }
-      }
-
-      // Email validation
-      if (!bookingData.emailAddress.trim()) {
-        newErrors.emailAddress = 'Email Address is required';
-      } else if (bookingData.emailAddress.length > 255) {
-        newErrors.emailAddress = 'Email must not exceed 255 characters';
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bookingData.emailAddress)) {
-        newErrors.emailAddress = 'Please enter a valid email address';
       }
     }
 
@@ -311,7 +311,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       className={`px-[20px] py-[16px] border ${errors.emailAddress ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     />
-                    {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>}
+                    <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>
                     {errors.emailAddress && <span className="text-red-500 text-xs mt-1 flex items-center gap-1 absolute -bottom-5 left-0">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       {errors.emailAddress}

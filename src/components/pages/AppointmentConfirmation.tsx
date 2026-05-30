@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../common/Header';
 import { useWebsiteSettings } from '../../contexts/WebsiteSettingsContext';
 import { BookingData } from '../../types/BookingTypes';
@@ -18,12 +18,16 @@ interface AppointmentConfirmationProps {
 const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ bookingData, onNext, onBack }) => {
   const { settings } = useWebsiteSettings();
   const clinicName = settings?.clinic_name || 'Cosmodental';
+
+  // Polyfill-safe left-pad for 2-digit numbers
+  const pad2 = (s: string): string => (s.length < 2 ? '0' + s : s);
+
+  // Polyfill-safe Array.includes replacement
+  const inList = (arr: string[], val: string): boolean => arr.indexOf(val) !== -1;
   const [loading, setLoading] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [submitting, setSubmitting] = useState(false);
   const [appointmentCode, setAppointmentCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({} as Record<string, string[]>);
   const hasSubmittedRef = useRef(false);
 
   // Calculate age from date of birth
@@ -116,7 +120,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
       const parts = trimmed.split('/');
       if (parts.length === 2) {
         const systolic = parts[0].trim();
-        const diastolic = parts[1].trim().padStart(2, '0');
+        const diastolic = pad2(parts[1].trim());
         // Keep systolic as is (2-3 digits is fine), ensure diastolic is 2 digits
         return `${systolic}/${diastolic}`;
       }
@@ -127,7 +131,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
     const numbers = trimmed.match(/\d+/g);
     if (numbers && numbers.length >= 2) {
       const systolic = numbers[0];
-      const diastolic = numbers[1].padStart(2, '0');
+      const diastolic = pad2(numbers[1]);
       return `${systolic}/${diastolic}`;
     }
     
@@ -151,7 +155,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
       const todayDateObj = new Date(todayYear, todayMonth, todayDay);
       
       if (selectedDateObj < todayDateObj) {
-        const todayFormatted = `${todayYear}-${String(todayMonth + 1).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
+        const todayFormatted = `${todayYear}-${pad2(String(todayMonth + 1))}-${pad2(String(todayDay))}`;
         throw new Error(`Selected date (${formattedDate}) must be today or a future date. Today is ${todayFormatted}`);
       }
       
@@ -165,13 +169,13 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           firstName: bookingData.firstName.trim(),
           lastName: bookingData.lastName.trim(),
           middleName: bookingData.middleName?.trim() || undefined,
-          gender: (['Male', 'Female', 'Other', 'Prefer not to say'].includes(bookingData.gender))
+          gender: (inList(['Male', 'Female', 'Other', 'Prefer not to say'], bookingData.gender))
             ? bookingData.gender as 'Male' | 'Female' | 'Other' | 'Prefer not to say'
             : 'Prefer not to say',
-          civilStatus: (['Single', 'Married', 'Divorced', 'Widowed', 'Separated'].includes(bookingData.civilStatus))
+          civilStatus: (inList(['Single', 'Married', 'Divorced', 'Widowed', 'Separated'], bookingData.civilStatus))
             ? bookingData.civilStatus as 'Single' | 'Married' | 'Divorced' | 'Widowed' | 'Separated'
             : 'Single',
-          dateOfBirth: bookingData.dateOfBirth || '',
+          dateOfBirth: bookingData.dateOfBirth || undefined,
           occupation: bookingData.occupation?.trim() || undefined,
           mobileNumber: formatMobileNumber(bookingData.mobileNumber.trim()),
           emailAddress: bookingData.emailAddress.trim(),
@@ -180,7 +184,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           reason: bookingData.reason.trim(),
           selectedDate: formattedDate,
           selectedTime: formattedTime,
-          howDidYouKnow: (['Walk-in', 'Referred by a relative or friend', 'Google', 'Social Media', 'YouTube', 'Others'].includes(bookingData.howDidYouKnow))
+          howDidYouKnow: (inList(['Walk-in', 'Referred by a relative or friend', 'Google', 'Social Media', 'YouTube', 'Others'], bookingData.howDidYouKnow))
             ? bookingData.howDidYouKnow as 'Walk-in' | 'Referred by a relative or friend' | 'Google' | 'Social Media' | 'YouTube' | 'Others'
             : 'Others',
           notes: bookingData.notes?.trim() || undefined,
@@ -190,37 +194,37 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           medicalTreatment: bookingData.medicalHistory.medicalTreatment?.trim() || undefined,
           medicalCondition: bookingData.medicalHistory.medicalCondition?.trim() || undefined,
           services: bookingData.medicalHistory.services?.trim() || undefined,
-          hospitalized: (['Yes', 'No', ''].includes(bookingData.medicalHistory.hospitalized))
+          hospitalized: (inList(['Yes', 'No', ''], bookingData.medicalHistory.hospitalized))
             ? bookingData.medicalHistory.hospitalized as 'Yes' | 'No' | ''
             : undefined,
           hospitalizedWhy: bookingData.medicalHistory.hospitalizedWhy?.trim() || undefined,
-          prescriptionMedication: (['Yes', 'No', ''].includes(bookingData.medicalHistory.prescriptionMedication))
+          prescriptionMedication: (inList(['Yes', 'No', ''], bookingData.medicalHistory.prescriptionMedication))
             ? bookingData.medicalHistory.prescriptionMedication as 'Yes' | 'No' | ''
             : undefined,
           prescriptionSpecify: bookingData.medicalHistory.prescriptionSpecify?.trim() || undefined,
-          tobacco: (['Yes', 'No', ''].includes(bookingData.medicalHistory.tobacco))
+          tobacco: (inList(['Yes', 'No', ''], bookingData.medicalHistory.tobacco))
             ? bookingData.medicalHistory.tobacco as 'Yes' | 'No' | ''
             : undefined,
-          alcohol: (['Yes', 'No', ''].includes(bookingData.medicalHistory.alcohol))
+          alcohol: (inList(['Yes', 'No', ''], bookingData.medicalHistory.alcohol))
             ? bookingData.medicalHistory.alcohol as 'Yes' | 'No' | ''
             : undefined,
-          allergic: (['Yes', 'No', ''].includes(bookingData.medicalHistory.allergic))
+          allergic: (inList(['Yes', 'No', ''], bookingData.medicalHistory.allergic))
             ? bookingData.medicalHistory.allergic as 'Yes' | 'No' | ''
             : undefined,
           allergicItems: bookingData.medicalHistory.allergicItems || undefined,
           bleedingTime: bookingData.medicalHistory.bleedingTime?.trim() || undefined,
           forWomenOnly: {
-            pregnant: (['Yes', 'No', 'N/A', ''].includes(bookingData.medicalHistory.forWomenOnly.pregnant))
+            pregnant: (inList(['Yes', 'No', 'N/A', ''], bookingData.medicalHistory.forWomenOnly.pregnant))
               ? bookingData.medicalHistory.forWomenOnly.pregnant as 'Yes' | 'No' | 'N/A' | ''
               : '',
-            nursing: (['Yes', 'No', 'N/A', ''].includes(bookingData.medicalHistory.forWomenOnly.nursing))
+            nursing: (inList(['Yes', 'No', 'N/A', ''], bookingData.medicalHistory.forWomenOnly.nursing))
               ? bookingData.medicalHistory.forWomenOnly.nursing as 'Yes' | 'No' | 'N/A' | ''
               : '',
-            birthControl: (['Yes', 'No', 'N/A', ''].includes(bookingData.medicalHistory.forWomenOnly.birthControl))
+            birthControl: (inList(['Yes', 'No', 'N/A', ''], bookingData.medicalHistory.forWomenOnly.birthControl))
               ? bookingData.medicalHistory.forWomenOnly.birthControl as 'Yes' | 'No' | 'N/A' | ''
               : '',
           },
-          bloodType: (['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown', ''].includes(bookingData.medicalHistory.bloodType))
+          bloodType: (inList(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-', 'Unknown', ''], bookingData.medicalHistory.bloodType))
             ? bookingData.medicalHistory.bloodType as 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-' | 'Unknown' | ''
             : undefined,
           bloodPressure: formatBloodPressure(bookingData.medicalHistory.bloodPressure),
@@ -376,15 +380,16 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
                     <div className="text-left bg-red-50 rounded p-4 mb-4">
                       <p className="text-xs font-semibold text-red-800 mb-2">Validation Errors:</p>
                       <ul className="text-xs text-red-700 space-y-1 list-disc list-inside">
-                        {Object.entries(validationErrors).map(([field, errors]) => {
-                          if (Array.isArray(errors)) {
-                            return errors.map((error, idx) => (
-                              <li key={`${field}-${idx}`}>{error}</li>
+                        {(Object.keys(validationErrors) as string[]).map((field: string) => {
+                          const errs: string[] = validationErrors[field];
+                          if (Array.isArray(errs)) {
+                            return errs.map((err: string, idx: number) => (
+                              <li key={`${field}-${idx}`}>{err}</li>
                             ));
                           }
                           return (
                             <li key={field}>
-                              <strong>{field}:</strong> {String(errors)}
+                              <strong>{field}:</strong> {String(errs)}
                             </li>
                           );
                         })}
@@ -437,13 +442,20 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
             <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0 not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
               <span className="leading-[normal]">Hi </span>
               <span className="font-semibold leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>{bookingData.firstName || 'Timothy'}</span>
-              <span className="leading-[normal]">, we’ve successfully</span>
+              <span className="leading-[normal]">, we've successfully</span>
             </p>
             <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0" style={{ fontFamily: 'Inter, sans-serif' }}>
               <span className="leading-[normal]">received your request for an appointment</span>
               <span className="leading-[normal]">!</span>
             </p>
           </div>
+
+          {bookingData.emailAddress && (
+            <p className="absolute left-1/2 -translate-x-1/2 top-[172px] m-0 text-[13px] text-[#6b7280] text-center whitespace-nowrap not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
+              A confirmation email has been sent to{' '}
+              <span className="font-semibold" style={{ color: '#0780AA' }}>{bookingData.emailAddress}</span>
+            </p>
+          )}
 
           {/* Inner box */}
           <div className="absolute left-[142px] top-[211px] w-[595px] h-[248px] bg-white border border-[#d0d5dd] border-solid rounded-[8px]" />
@@ -519,4 +531,3 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 };
 
 export default AppointmentConfirmation;
-

@@ -34,7 +34,7 @@ export interface PatientData {
   middleName?: string;
   gender: 'Male' | 'Female' | 'Other' | 'Prefer not to say';
   civilStatus: 'Single' | 'Married' | 'Divorced' | 'Widowed' | 'Separated';
-  dateOfBirth: string; // YYYY-MM-DD
+  dateOfBirth?: string; // YYYY-MM-DD (required for New patients, optional for Existing)
   occupation?: string;
   mobileNumber: string;
   emailAddress: string;
