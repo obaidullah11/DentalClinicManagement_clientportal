@@ -30,7 +30,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     "Referred by a relative or friend",
     "Google",
     "Social Media",
-    "YouTube",
+    "Youtube",
     "Others"
   ];
 
@@ -147,20 +147,22 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                 </div>
               </div>
               
-              <div className="border-b border-[#bfbfbf] border-dashed mb-[30px]"></div>
+              <div className="border-b border-[#dddddd] mb-[30px]"></div>
               
               <div className="mb-[30px]">
                 <h3 className="text-[20px] font-bold text-[#242424] mb-[15px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                  How Did you know about {clinicName}? <span className="text-red-500">*</span>
+                  How Did you know about {clinicName}?
                 </h3>
                 <div className="relative" ref={dropdownRef}>
                   <button
                     type="button"
                     onClick={handleDropdownToggle}
-                    className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] text-left bg-white flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-cosmo-green focus:border-cosmo-green tracking-[-0.28px]"
+                    className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] font-medium h-[55px] text-left bg-white flex items-center justify-between hover:border-gray-400 focus:outline-none focus:ring-1 focus:ring-cosmo-green focus:border-cosmo-green"
                     style={{ fontFamily: 'Manrope, sans-serif' }}
                   >
-                    <span className={bookingData.howDidYouKnow ? 'text-[#242424]' : 'text-[#9f9f9f]'}>
+                    <span className={bookingData.howDidYouKnow
+                      ? 'text-[20px] text-[#242424] tracking-[-0.4px]'
+                      : 'text-[16px] text-[#9f9f9f] tracking-[-0.32px]'}>
                       {bookingData.howDidYouKnow || 'Choose your answer'}
                     </span>
                     <svg
@@ -182,7 +184,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                           key={option}
                           type="button"
                           onClick={() => handleOptionSelect(option)}
-                          className={`w-full px-[20px] py-[12px] text-left text-[14px] font-medium hover:bg-[#f3f3f3] focus:outline-none transition-colors tracking-[-0.28px] ${
+                          className={`w-full px-[20px] py-[12px] text-left text-[18px] font-medium hover:bg-[#f3f3f3] focus:outline-none transition-colors tracking-[-0.36px] ${
                             bookingData.howDidYouKnow === option ? 'bg-[#f3f3f3] text-[#242424]' : 'text-[#242424]'
                           }`}
                           style={{ fontFamily: 'Manrope, sans-serif' }}
@@ -205,7 +207,7 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
                 <textarea 
                   value={bookingData.notes} 
                   onChange={(e) => updateBookingData('notes', e.target.value)} 
-                  placeholder="Write..." 
+                  placeholder="Notes"
                   className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] font-medium h-[55px] resize-none focus:outline-none focus:border-cosmo-green tracking-[-0.28px] placeholder:text-[#9f9f9f]"
                   style={{ fontFamily: 'Manrope, sans-serif' }}
                 ></textarea>
@@ -213,19 +215,9 @@ const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
             </div>
 
             <div className="pt-[30px] pb-[50px] flex justify-center lg:justify-start gap-[14px]">
-              <button 
-                onClick={onBack} 
-                className="w-[256px] h-[55px] bg-[#f3f3f3] text-[#242424] rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] hover:bg-gray-200 transition-colors flex items-center justify-center"
-                style={{ fontFamily: 'Manrope, sans-serif' }}
-              >
-                Back
-              </button>
-              <button 
-                onClick={handleNext} 
-                disabled={!isFormValid()}
-                className={`w-[256px] h-[55px] text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] transition-colors flex items-center justify-center ${
-                  isFormValid() ? 'bg-cosmo-green hover:opacity-90' : 'bg-cosmo-green opacity-50 cursor-not-allowed'
-                }`}
+              <button
+                onClick={handleNext}
+                className="w-[256px] h-[55px] bg-cosmo-green text-white rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] hover:opacity-90 transition-opacity flex items-center justify-center cursor-pointer"
                 style={{ fontFamily: 'Manrope, sans-serif' }}
               >
                 Next

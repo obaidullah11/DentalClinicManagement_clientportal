@@ -97,50 +97,11 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
       }
     }
 
-    // Validate bleeding time (Question 9)
-    if (!bookingData.medicalHistory.bleedingTime || !bookingData.medicalHistory.bleedingTime.trim()) {
-      newErrors.bleedingTime = 'Required';
-    } else if (bookingData.medicalHistory.bleedingTime.length > 100) {
-      newErrors.bleedingTime = 'Response must not exceed 100 characters';
-    }
-
-    // Validate allergies (Question 8) - at least one allergy should be selected
-    const allergicItems = bookingData.medicalHistory.allergicItems;
-    if (!allergicItems || Object.values(allergicItems).every(value => !value)) {
-      newErrors.allergies = 'Required';
-    }
-
-    // Validate for women only (Question 10) - only if patient is female
-    if (bookingData.gender === 'Female') {
-      const forWomenOnly = bookingData.medicalHistory.forWomenOnly;
-      if (!forWomenOnly.pregnant || !forWomenOnly.nursing || !forWomenOnly.birthControl || 
-          forWomenOnly.pregnant === '' || forWomenOnly.nursing === '' || forWomenOnly.birthControl === '') {
-        newErrors.forWomenOnly = 'Required';
-      }
-    }
-
-    // Validate medical conditions (Question 13) - at least one condition should be selected
-    const followingConditions = bookingData.medicalHistory.followingConditions;
-    if (!followingConditions || followingConditions.length === 0) {
-      newErrors.followingConditions = 'Required';
-    }
-
-    // Validate blood type (Question 11) - required field
-    if (!bookingData.medicalHistory.bloodType || !bookingData.medicalHistory.bloodType.trim()) {
-      newErrors.bloodType = 'Required';
-    } else if (bookingData.medicalHistory.bloodType.length > 20) {
-      newErrors.bloodType = 'Blood type must not exceed 20 characters';
-    }
-
-    // Validate blood pressure (Question 12) - required field
-    if (!bookingData.medicalHistory.bloodPressure || !bookingData.medicalHistory.bloodPressure.trim()) {
-      newErrors.bloodPressure = 'Required';
-    } else {
+    // Validate blood pressure format only if a value is entered (Question 12 - optional)
+    if (bookingData.medicalHistory.bloodPressure && bookingData.medicalHistory.bloodPressure.trim()) {
       const bpPattern = /^\d{2,3}\/\d{2}$/;
       if (!bpPattern.test(bookingData.medicalHistory.bloodPressure.trim())) {
         newErrors.bloodPressure = 'Invalid format. Use XXX/XX (e.g., 120/80)';
-      } else if (bookingData.medicalHistory.bloodPressure.length > 20) {
-        newErrors.bloodPressure = 'Blood pressure must not exceed 20 characters';
       }
     }
 
@@ -247,7 +208,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
   const YesNoRadio = ({ field, question, number }: { field: keyof MedicalHistory, question: string, number: number }) => (
     <div className="mb-[30px]">
       <div className="flex items-start gap-[16px]">
-        <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+        <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-[3px] flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
           {number}
         </div>
         <div className="flex-1">
@@ -285,26 +246,26 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
   );
 
   return (
-    <div className="min-h-screen bg-white font-sans flex flex-col h-screen">
+    <div className="min-h-screen bg-white font-sans">
       <Header />
-      <div className="w-full flex flex-col items-center pt-[53px] pb-[50px] overflow-hidden flex-1">
+      <div className="w-full flex flex-col items-center pt-[53px] pb-[50px]">
         <h1 className="text-[24px] font-bold text-cosmo-green mb-[45px] text-center tracking-[-0.48px] shrink-0" style={{ fontFamily: 'Manrope, sans-serif' }}>
           Book your Appointment
         </h1>
 
-        <div className="w-full max-w-[1241px] flex justify-between items-start px-4 lg:px-0 flex-1 overflow-hidden min-h-0">
-          <div className="w-full lg:w-[673px] flex flex-col h-full">
+        <div className="w-full max-w-[1241px] flex justify-between items-start px-4 lg:px-0">
+          <div className="w-full lg:w-[673px]">
             {/* Clinic Info - Mobile Only */}
-            <div className="lg:hidden mb-[53px] flex-shrink-0">
+            <div className="lg:hidden mb-[53px]">
               <ClinicInfo />
             </div>
 
-            <div className="flex-1 flex flex-col w-full h-full min-h-0">
-              <div className="mb-[53px] flex-shrink-0">
+            <div>
+              <div className="mb-[53px]">
                 <h2 className="text-[20px] font-bold text-[#242424] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Medical History</h2>
               </div>
 
-              <div className="flex-1 overflow-y-auto pr-4 custom-scrollbar pb-[20px]">
+              <div className="pb-[20px]">
 
               {/* Question 1 */}
               <YesNoRadio 
@@ -420,63 +381,63 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
               {/* Question 8 - Allergies */}
               <div className="mb-[30px]">
                 <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-[3px] flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                     8
                   </div>
                   <div className="flex-1">
                     <p className="text-[16px] font-normal text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>8. Are you allergic to any of the following?</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-[15px] gap-x-[20px]">
-                      <label className="flex items-center gap-[8px] cursor-pointer">
+                      <label className="flex items-start gap-[8px] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={bookingData.medicalHistory.allergicItems?.localAnesthetic || false}
                           onChange={(e) => handleAllergicItemChange('localAnesthetic', e.target.checked)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px]"
+                          className="appearance-none w-3 h-3 mt-[2px] flex-shrink-0 rounded-full border border-[#1e1e1e] cursor-pointer checked:bg-[#0a5add] checked:border-[#0a5add]"
                         />
                         <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Local Anesthetic (ex. Lidocaine)</span>
                       </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
+                      <label className="flex items-start gap-[8px] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={bookingData.medicalHistory.allergicItems?.penicillin || false}
                           onChange={(e) => handleAllergicItemChange('penicillin', e.target.checked)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px]"
+                          className="appearance-none w-3 h-3 mt-[2px] flex-shrink-0 rounded-full border border-[#1e1e1e] cursor-pointer checked:bg-[#0a5add] checked:border-[#0a5add]"
                         />
                         <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Penicillin, Antibiotics</span>
                       </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
+                      <label className="flex items-start gap-[8px] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={bookingData.medicalHistory.allergicItems?.latex || false}
                           onChange={(e) => handleAllergicItemChange('latex', e.target.checked)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px]"
+                          className="appearance-none w-3 h-3 mt-[2px] flex-shrink-0 rounded-full border border-[#1e1e1e] cursor-pointer checked:bg-[#0a5add] checked:border-[#0a5add]"
                         />
                         <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Latex</span>
                       </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
+                      <label className="flex items-start gap-[8px] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={bookingData.medicalHistory.allergicItems?.sulfa || false}
                           onChange={(e) => handleAllergicItemChange('sulfa', e.target.checked)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px]"
+                          className="appearance-none w-3 h-3 mt-[2px] flex-shrink-0 rounded-full border border-[#1e1e1e] cursor-pointer checked:bg-[#0a5add] checked:border-[#0a5add]"
                         />
                         <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Sulfa Drugs</span>
                       </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
+                      <label className="flex items-start gap-[8px] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={bookingData.medicalHistory.allergicItems?.aspirin || false}
                           onChange={(e) => handleAllergicItemChange('aspirin', e.target.checked)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px]"
+                          className="appearance-none w-3 h-3 mt-[2px] flex-shrink-0 rounded-full border border-[#1e1e1e] cursor-pointer checked:bg-[#0a5add] checked:border-[#0a5add]"
                         />
                         <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Aspirin</span>
                       </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
+                      <label className="flex items-start gap-[8px] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={bookingData.medicalHistory.allergicItems?.others || false}
                           onChange={(e) => handleAllergicItemChange('others', e.target.checked)}
-                          className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px]"
+                          className="appearance-none w-3 h-3 mt-[2px] flex-shrink-0 rounded-full border border-[#1e1e1e] cursor-pointer checked:bg-[#0a5add] checked:border-[#0a5add]"
                         />
                         <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Others</span>
                       </label>
@@ -491,7 +452,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
               {/* Question 9 */}
               <div className="mb-[30px]">
                 <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-[3px] flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                     9
                   </div>
                   <div className="flex-1">
@@ -512,7 +473,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
               {/* Question 10 - For women only */}
               <div className="mb-[30px]">
                 <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-[3px] flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                     10
                   </div>
                   <div className="flex-1">
@@ -614,7 +575,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
               {/* Question 11 */}
               <div className="mb-[30px]">
                 <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-[3px] flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                     11
                   </div>
                   <div className="flex-1">
@@ -635,7 +596,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
               {/* Question 12 */}
               <div className="mb-[30px]">
                 <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-[3px] flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                     12
                   </div>
                   <div className="flex-1">
@@ -656,7 +617,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
               {/* Question 13 - Medical Conditions */}
               <div className="mb-[30px]">
                 <div className="flex items-start gap-[16px]">
-                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-full flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  <div className="w-[24px] h-[24px] bg-cosmo-green text-white rounded-[3px] flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
                     13
                   </div>
                   <div className="flex-1">
@@ -676,12 +637,12 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                         'Sinus Trouble', 'Heart Surgery', 'Heart Attack',
                         'Chest Pain', 'Thyroid Problems', 'Stroke', 'Other'
                       ].map((condition) => (
-                        <label key={condition} className="flex items-center gap-[8px] cursor-pointer">
+                        <label key={condition} className="flex items-start gap-[8px] cursor-pointer">
                           <input
                             type="checkbox"
                             checked={bookingData.medicalHistory.followingConditions?.includes(condition) || false}
                             onChange={(e) => handleConditionChange(condition, e.target.checked)}
-                            className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px]"
+                            className="appearance-none w-3 h-3 mt-[2px] flex-shrink-0 rounded-full border border-[#1e1e1e] cursor-pointer checked:bg-[#0a5add] checked:border-[#0a5add]"
                           />
                           <span className="text-[13px] font-normal text-[#303030] leading-[normal]" style={{ fontFamily: 'Inter, sans-serif' }}>{condition}</span>
                         </label>
@@ -699,29 +660,31 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                 <h3 className="text-[16px] font-semibold text-[#242424] mb-[15px] tracking-[-0.32px]" style={{ fontFamily: 'Inter, sans-serif' }}>Consent and Acknowledgement</h3>
                 
                 <div className="mb-[15px]">
-                  <label className="flex items-start gap-[8px] cursor-pointer">
+                  <label className="flex items-start gap-[12px] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={consentAcknowledged}
                       onChange={(e) => setConsentAcknowledged(e.target.checked)}
-                      className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px] mt-1 shrink-0"
+                      className="w-[18px] h-[18px] flex-shrink-0 mt-[2px] cursor-pointer"
+                      style={{ accentColor: 'var(--primary-color)' }}
                     />
                     <span className="text-[13px] font-normal text-[#303030] leading-[normal]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      I acknowledge that I have TRUTHFULLY completed this questionnaire and understand the guidelines. I will seek 
-                      assistance from the dental staff if needed. I agree to disclose any past illnesses, medical, and dental history, and 
-                      understand that providing incorrect information about medications, allergies, or illnesses can be harmful to my 
+                      I acknowledge that I have TRUTHFULLY completed this questionnaire and understand the guidelines. I will seek
+                      assistance from the dental staff if needed. I agree to disclose any past illnesses, medical, and dental history, and
+                      understand that providing incorrect information about medications, allergies, or illnesses can be harmful to my
                       health. I will inform the dentist or staff of any changes in my health at my next appointment.
                     </span>
                   </label>
                 </div>
 
                 <div className="mb-0">
-                  <label className="flex items-start gap-[8px]">
+                  <label className="flex items-center gap-[12px] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={termsAccepted}
                       onChange={(e) => setTermsAccepted(e.target.checked)}
-                      className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8] rounded-[4px] mt-1 shrink-0"
+                      className="w-[18px] h-[18px] flex-shrink-0 cursor-pointer"
+                      style={{ accentColor: 'var(--primary-color)' }}
                     />
                     <span className="text-[13px] font-normal text-[#303030] leading-[normal]" style={{ fontFamily: 'Inter, sans-serif' }}>
                       I agree and accept all the details above as well as{' '}
@@ -751,7 +714,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                 </div>
               </div>
               </div>
-              <div className="flex-shrink-0 pt-[30px] flex justify-center lg:justify-start gap-[14px]">
+              <div className="pt-[30px] flex justify-center lg:justify-start gap-[14px]">
                 <button 
                   onClick={onBack}
                   className="w-[256px] h-[55px] bg-[#f3f3f3] text-[#242424] rounded-[8px] text-[16px] font-semibold tracking-[-0.32px] hover:bg-gray-200 transition-colors flex items-center justify-center cursor-pointer"

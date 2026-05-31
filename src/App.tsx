@@ -30,9 +30,11 @@ const AppContent: React.FC = () => {
 
   const [currentStep, setCurrentStep] = useState(getCurrentStepFromStorage());
   const [showCalendar, setShowCalendar] = useState(false);
+  const [bookingKey, setBookingKey] = useState(0);
 
   // Check if a step is hidden
   const isStepHidden = (step: number): boolean => {
+    if (step === 2 && bookingData.patientType === 'Existing') return true;
     return settings?.hidden_steps?.includes(step) || false;
   };
 
@@ -131,26 +133,26 @@ const AppContent: React.FC = () => {
       
       // Bleeding Time (Question 9)
       bleedingTime: '',
-      
+
       // For Women Only (Question 10)
       forWomenOnly: {
         pregnant: '',
         nursing: '',
         birthControl: ''
       },
-      
+
       // Other Questions (11-12)
       bloodPressure: '',
       medicalCondition: '',
       allergic: '',
       bloodType: '',
-      
+
       // Medical Conditions (Question 13)
       followingConditions: []
     },
-    
+
     // Additional Info
-    howDidYouKnow: 'Choose your answer',
+    howDidYouKnow: '',
     notes: '',
     reason: ''
   });
@@ -189,6 +191,7 @@ const AppContent: React.FC = () => {
 
   // Reset booking data when starting a new appointment
   const resetBookingData = () => {
+    setBookingKey(k => k + 1);
     // Clear localStorage
     try {
       localStorage.removeItem('bookingData');
@@ -272,6 +275,7 @@ const AppContent: React.FC = () => {
           case 1:
             return (
               <PatientTypeSelection
+                key={bookingKey}
                 bookingData={bookingData}
                 updateBookingData={updateBookingData}
                 onNext={() => {
@@ -288,6 +292,7 @@ const AppContent: React.FC = () => {
           case 2:
             return (
               <BookingConfirmation
+                key={bookingKey}
                 bookingData={bookingData}
                 updateBookingData={updateBookingData}
                 onNext={() => {
@@ -304,6 +309,7 @@ const AppContent: React.FC = () => {
           case 3:
             return (
               <DateTimeSelection
+                key={bookingKey}
                 bookingData={bookingData}
                 updateBookingData={updateBookingData}
                 showCalendar={showCalendar}
@@ -326,6 +332,7 @@ const AppContent: React.FC = () => {
           case 4:
             return (
               <PatientDetailsForm
+                key={bookingKey}
                 bookingData={bookingData}
                 updateBookingData={updateBookingData}
                 onNext={() => {
@@ -346,6 +353,7 @@ const AppContent: React.FC = () => {
           case 5:
             return (
               <MedicalHistoryComponent
+                key={bookingKey}
                 bookingData={bookingData}
                 updateMedicalHistory={updateMedicalHistory}
                 onNext={() => {
@@ -363,10 +371,7 @@ const AppContent: React.FC = () => {
             return (
               <AppointmentConfirmation
                 bookingData={bookingData}
-                onNext={() => {
-                  const nextStep = getNextAvailableStep(6);
-                  setCurrentStep(nextStep);
-                }}
+                onNext={() => handleAppointmentCompletion()}
                 onBack={() => {
                   const prevStep = getPreviousAvailableStep(6);
                   setCurrentStep(prevStep);

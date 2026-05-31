@@ -92,7 +92,7 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
     }
 
     if (!bookingData.reason && !othersText.trim()) {
-      newErrors.reason = 'Please select a reason for visit or specify in Others';
+      newErrors.reason = 'Please Select Your Reason';
     }
 
     setErrors(newErrors);
@@ -104,10 +104,6 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
     if (validateForm()) {
       onNext();
     }
-  };
-
-  const isFormValid = () => {
-    return bookingData.patientType && (bookingData.reason || othersText.trim());
   };
 
   return (
@@ -162,7 +158,7 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
             {/* Reason for Visit */}
             <div className="mb-[28px]">
               <h3 className="text-[20px] font-bold text-[#242424] mb-[26px] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                Reason for Visit <span className="text-red-500">*</span>
+                Reason for Visit
               </h3>
               <div className="flex flex-wrap gap-x-[12px] gap-y-[12px]">
                 {procedureChoices.map((reason) => (
@@ -191,16 +187,15 @@ const PatientTypeSelection: React.FC<PatientTypeSelectionProps> = ({
                 />
               </div>
               {showErrors && errors.reason && (
-                <p className="text-red-500 text-xs mt-2">{errors.reason}</p>
+                <p className="text-[18px] mt-2 font-medium" style={{ color: 'rgb(221,10,10)', fontFamily: 'Manrope, sans-serif' }}>{errors.reason}</p>
               )}
             </div>
 
             {/* Confirm Button */}
             <div className="pt-[30px] pb-8 flex justify-center lg:justify-end gap-[14px]">
-              <button 
-                onClick={handleNext} 
-                disabled={!isFormValid()}
-                className={`bg-cosmo-green text-white transition-opacity flex items-center justify-center border-none ${isFormValid() ? 'hover:opacity-90 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+              <button
+                onClick={handleNext}
+                className="bg-cosmo-green text-white transition-opacity flex items-center justify-center border-none hover:opacity-90 cursor-pointer"
                 style={{ width: '256px', height: '55px', borderRadius: '8px', fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontStyle: 'normal', fontWeight: 600, lineHeight: 'normal', letterSpacing: '-0.32px' }}
               >
                 Confirm

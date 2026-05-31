@@ -460,7 +460,9 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           
           <div className="absolute left-1/2 -translate-x-1/2 top-[27px] w-[61px] h-[61px] overflow-clip">
             <div className="absolute inset-[12.5%_12.5%_0.78%_12.5%]">
-               <img src="/images/calendar_new.svg" alt="" className="absolute block max-w-none w-full h-full" />
+              <svg className="absolute block w-full h-full text-cosmo-green" preserveAspectRatio="none" overflow="visible" viewBox="0 0 45.75 52.9019" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M45.75 22.875V40.6667C45.75 42.0149 45.2144 43.3078 44.2611 44.2611C43.3078 45.2144 42.0149 45.75 40.6667 45.75H5.08333C3.73515 45.75 2.44218 45.2144 1.48887 44.2611C0.535564 43.3078 0 42.0149 0 40.6667V22.875H45.75ZM33.0417 0C33.7158 0 34.3622 0.267782 34.8389 0.744437C35.3156 1.22109 35.5833 1.86757 35.5833 2.54167V5.08333H40.6667C42.0149 5.08333 43.3078 5.6189 44.2611 6.57221C45.2144 7.52552 45.75 8.81848 45.75 10.1667V17.7917H0V10.1667C0 8.81848 0.535564 7.52552 1.48887 6.57221C2.44218 5.6189 3.73515 5.08333 5.08333 5.08333H10.1667V2.54167C10.1667 1.86757 10.4344 1.22109 10.9111 0.744437C11.3878 0.267782 12.0342 0 12.7083 0C13.3824 0 14.0289 0.267782 14.5056 0.744437C14.9822 1.22109 15.25 1.86757 15.25 2.54167V5.08333H30.5V2.54167C30.5 1.86757 30.7678 1.22109 31.2444 0.744437C31.7211 0.267782 32.3676 0 33.0417 0Z"/>
+              </svg>
             </div>
           </div>
           
@@ -476,12 +478,6 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
             </p>
           </div>
 
-          {bookingData.emailAddress && (
-            <p className="absolute left-1/2 -translate-x-1/2 top-[172px] m-0 text-[13px] text-[#6b7280] text-center whitespace-nowrap not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
-              A confirmation email has been sent to{' '}
-              <span className="font-semibold" style={{ color: '#0780AA' }}>{bookingData.emailAddress}</span>
-            </p>
-          )}
 
           {/* Inner box */}
           <div className="absolute left-[142px] top-[211px] w-[595px] h-[248px] bg-white border border-[#d0d5dd] border-solid rounded-[8px]" />
@@ -525,13 +521,6 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
              </div>
           </div>
 
-          {/* Appointment code inside inner box (right part) */}
-          <p className="absolute left-[608px] top-[290px] -translate-x-1/2 m-0 text-[#242424] text-[16px] font-normal leading-[normal] text-center whitespace-nowrap not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Your appointment code is
-          </p>
-          <p className="absolute left-[611.5px] top-[328px] -translate-x-1/2 m-0 text-[#242424] text-[24px] font-bold leading-[normal] text-center whitespace-nowrap not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
-            {appointmentCode || 'ABC12346789'}
-          </p>
 
           <p className="absolute left-1/2 -translate-x-1/2 top-[495px] m-0 w-[400px] h-[43px] text-center text-[#242424] text-[16px] font-medium leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
             Please be informed that this is NOT YET A CONFIRMED APPOINTMENT. 
@@ -542,15 +531,6 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
 
         </div>
         
-        <div className="flex justify-center mt-[40px] pb-8 w-full">
-          <button
-            onClick={onNext}
-            className="w-[256px] h-[55px] bg-cosmo-green text-[16px] text-white font-semibold rounded-[8px] tracking-[-0.32px] hover:opacity-90 transition-colors flex items-center justify-center cursor-pointer border-none"
-            style={{ fontFamily: 'Manrope, sans-serif' }}
-          >
-            Continue
-          </button>
-        </div>
       </div>
     </div>
   );

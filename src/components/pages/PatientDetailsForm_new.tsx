@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ClinicInfo from '../common/ClinicInfo';
 import Header from '../common/Header';
-import Footer from '../common/Footer';
 import { BookingData } from '../../types/BookingTypes';
 
 interface PatientDetailsFormProps {
@@ -20,6 +19,13 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
   onChangeDateTime
 }) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const inputStyle = (hasError: boolean): React.CSSProperties => ({
+    width: '100%', height: '55px', borderRadius: '8px',
+    border: `1px solid ${hasError ? 'rgb(142,31,11)' : '#E8E8E8'}`,
+    backgroundColor: hasError ? 'rgb(254,233,232)' : 'white',
+    fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500
+  });
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -88,15 +94,15 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
         newErrors.civilStatus = 'Civil Status is required';
       }
 
-      // Date of Birth validation
+      // Date of Birth validation (MM/DD/YYYY)
       if (!bookingData.dateOfBirth) {
         newErrors.dateOfBirth = 'Date of Birth is required';
       } else {
-        const parts = bookingData.dateOfBirth.split('-');
-        if (parts.length !== 3 || parts[0].length !== 4 || parts[1].length !== 2 || parts[2].length !== 2) {
-          newErrors.dateOfBirth = 'Use YYYY-MM-DD format';
+        const parts = bookingData.dateOfBirth.split('/');
+        if (parts.length !== 3 || parts[0].length !== 2 || parts[1].length !== 2 || parts[2].length !== 4) {
+          newErrors.dateOfBirth = 'Use MM/DD/YYYY format';
         } else {
-          const [yyyy, mm, dd] = parts.map(Number);
+          const [mm, dd, yyyy] = parts.map(Number);
           const dob = new Date(yyyy, mm - 1, dd);
           const today = new Date();
           today.setHours(0, 0, 0, 0);
@@ -140,7 +146,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
             </div>
 
             <div>
-              <div className="mb-[30px] flex-shrink-0 border-b border-[#bfbfbf] border-dashed pb-[20px]">
+              <div className="mb-[30px] flex-shrink-0 border-b border-[#dddddd] pb-[20px]">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[20px] font-bold text-[#242424] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{bookingData.patientType} Patient</span>
                   <button onClick={onChangePatientType} className="text-[14px] font-semibold text-[#242424] underline tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Change</button>
@@ -148,7 +154,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                 <span className="text-[14px] font-normal text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{bookingData.reason}</span>
               </div>
               
-              <div className="mb-6 flex-shrink-0 border-b border-[#bfbfbf] border-dashed pb-[20px]">
+              <div className="mb-6 flex-shrink-0 border-b border-[#dddddd] pb-[20px]">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-[20px] font-bold text-[#242424] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{bookingData.selectedDate}</span>
                   <button onClick={onChangeDateTime} className="text-[14px] font-semibold text-[#242424] underline tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Change</button>
@@ -170,10 +176,10 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       value={bookingData.firstName} 
                       onChange={(e) => updateBookingData('firstName', e.target.value)} 
                       className={`px-[20px] ${errors.firstName ? 'border-red-500' : ''} placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.firstName ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.firstName) }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>}
-                    {errors.firstName && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.firstName}</span>}
+                    {errors.firstName && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.firstName}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <input 
@@ -182,9 +188,9 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       value={bookingData.middleName} 
                       onChange={(e) => updateBookingData('middleName', e.target.value)} 
                       className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.middleName ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.middleName) }}
                     />
-                    {errors.middleName && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.middleName}</span>}
+                    {errors.middleName && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.middleName}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <input 
@@ -193,10 +199,10 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       value={bookingData.lastName} 
                       onChange={(e) => updateBookingData('lastName', e.target.value)} 
                       className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.lastName ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.lastName) }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>}
-                    {errors.lastName && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.lastName}</span>}
+                    {errors.lastName && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.lastName}</span>}
                   </div>
                 </div>
                 
@@ -207,7 +213,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                         value={bookingData.gender} 
                         onChange={(e) => updateBookingData('gender', e.target.value)} 
                         className={`focus:outline-none focus:border-cosmo-green tracking-[-0.32px] bg-white appearance-none cursor-pointer px-[20px] ${bookingData.gender ? 'text-[#242424]' : 'text-[#9f9f9f]'}`}
-                        style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.gender ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
+                        style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.gender) }}
                       >
                         <option value="" disabled hidden>Select Gender</option>
                         <option value="Male" className="text-[#242424]">Male</option>
@@ -220,7 +226,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       </div>
                     </div>
                     <span className="absolute top-[2px] right-[10px] text-red-500 text-xs z-10">*</span>
-                    {errors.gender && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.gender}</span>}
+                    {errors.gender && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.gender}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <div className="relative">
@@ -228,7 +234,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                         value={bookingData.civilStatus} 
                         onChange={(e) => updateBookingData('civilStatus', e.target.value)} 
                         className={`focus:outline-none focus:border-cosmo-green tracking-[-0.32px] bg-white appearance-none cursor-pointer px-[20px] ${bookingData.civilStatus ? 'text-[#242424]' : 'text-[#9f9f9f]'}`}
-                        style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.civilStatus ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
+                        style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.civilStatus) }}
                       >
                         <option value="" disabled hidden>Select Civil Status</option>
                         <option value="Single" className="text-[#242424]">Single</option>
@@ -244,7 +250,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       </div>
                     </div>
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs z-10">*</span>}
-                    {errors.civilStatus && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.civilStatus}</span>}
+                    {errors.civilStatus && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.civilStatus}</span>}
                   </div>
                 </div>
 
@@ -252,26 +258,26 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                   <div className="flex flex-col relative">
                     <input 
                       type="text"
-                      placeholder="YYYY-MM-DD (e.g., 1990-05-15)"
+                      placeholder="MM/DD/YYYY (e.g., 05/15/1990)"
                       value={bookingData.dateOfBirth}
                       onChange={(e) => {
-                        let val = e.target.value.replace(/[^0-9-]/g, '');
-                        // Auto-format as user types
-                        if (val.length === 4 && !val.includes('-')) {
-                          val = val + '-';
-                        } else if (val.length === 7 && val.split('-').length === 2) {
-                          val = val + '-';
+                        let val = e.target.value.replace(/[^0-9/]/g, '');
+                        // Auto-insert slashes: MM/DD/YYYY
+                        if (val.length === 2 && !val.includes('/')) {
+                          val = val + '/';
+                        } else if (val.length === 5 && val.split('/').length === 2) {
+                          val = val + '/';
                         }
-                        // Limit to YYYY-MM-DD format (10 characters)
+                        // Limit to MM/DD/YYYY format (10 characters)
                         val = val.slice(0, 10);
                         updateBookingData('dateOfBirth', val);
                       }}
                       maxLength={10}
                       className={`px-[20px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.dateOfBirth ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.dateOfBirth) }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[30px] text-red-500 text-xs z-10">*</span>}
-                    {errors.dateOfBirth && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.dateOfBirth}</span>}
+                    {errors.dateOfBirth && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.dateOfBirth}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <input 
@@ -280,9 +286,9 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       value={bookingData.occupation} 
                       onChange={(e) => updateBookingData('occupation', e.target.value)} 
                       className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ width: '100%', height: '55px', borderRadius: '8px', border: `1px solid ${errors.occupation ? '#ef4444' : '#E8E8E8'}`, fontFamily: 'Manrope, sans-serif', fontSize: '16px', fontWeight: 500 }}
+                      style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.occupation) }}
                     />
-                    {errors.occupation && <span className="text-red-500 text-xs mt-1 absolute -bottom-5 left-0">{errors.occupation}</span>}
+                    {errors.occupation && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.occupation}</span>}
                   </div>
                 </div>
                 
@@ -293,26 +299,27 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       placeholder="Mobile Number" 
                       value={bookingData.mobileNumber} 
                       onChange={(e) => updateBookingData('mobileNumber', e.target.value)} 
-                      className={`px-[20px] py-[16px] border ${errors.mobileNumber ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                      className="px-[20px] py-[16px] rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]"
+                      style={{ fontFamily: 'Manrope, sans-serif', ...inputStyle(!!errors.mobileNumber) }}
                     />
                     <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>
-                    {errors.mobileNumber && <span className="text-red-500 text-xs mt-1 flex items-center gap-1 absolute -bottom-5 left-0">
+                    {errors.mobileNumber && <span className="text-[13px] mt-1 flex items-center gap-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       {errors.mobileNumber}
                     </span>}
                   </div>
                   <div className="flex flex-col relative">
-                    <input 
-                      type="email" 
-                      placeholder="Email Address" 
-                      value={bookingData.emailAddress} 
-                      onChange={(e) => updateBookingData('emailAddress', e.target.value)} 
-                      className={`px-[20px] py-[16px] border ${errors.emailAddress ? 'border-red-500' : 'border-[#e8e8e8]'} rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
-                      style={{ fontFamily: 'Manrope, sans-serif' }}
+                    <input
+                      type="email"
+                      placeholder="Email Address"
+                      value={bookingData.emailAddress}
+                      onChange={(e) => updateBookingData('emailAddress', e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleNext(); }}
+                      className="px-[20px] py-[16px] rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]"
+                      style={{ fontFamily: 'Manrope, sans-serif', ...inputStyle(!!errors.emailAddress) }}
                     />
                     <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>
-                    {errors.emailAddress && <span className="text-red-500 text-xs mt-1 flex items-center gap-1 absolute -bottom-5 left-0">
+                    {errors.emailAddress && <span className="text-[13px] mt-1 flex items-center gap-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       {errors.emailAddress}
                     </span>}
@@ -345,7 +352,6 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

@@ -350,6 +350,12 @@ export interface WebsiteSettingsData {
   logo_url: string;
   primary_color: string;
   procedure_choices: string[];
+  terms_and_conditions: string;
+  privacy_policy: string;
+  hidden_steps: number[];
+  allow_online_booking: boolean;
+  header_photo_url: string;
+  clinic_photo_url: string;
 }
 
 export interface ClinicSettingsData {

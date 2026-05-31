@@ -273,6 +273,20 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     return new Date(year, month, 1).getDay();
   };
 
+  const navigateDay = (direction: 'prev' | 'next') => {
+    const current = new Date(selectedYear, selectedMonth, selectedDate);
+    current.setDate(current.getDate() + (direction === 'next' ? 1 : -1));
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (current < today) return;
+    setSelectedDate(current.getDate());
+    setSelectedMonth(current.getMonth());
+    setSelectedYear(current.getFullYear());
+    const dateStr = `${months[current.getMonth()]} ${current.getDate()}, ${current.getFullYear()}`;
+    updateBookingData('selectedDate', dateStr);
+    setError('');
+  };
+
   const navigateMonth = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
       if (currentMonth === 0) {
@@ -408,7 +422,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             </div>
 
             <div>
-              <div className="mb-[30px] flex-shrink-0 border-b border-[#bfbfbf] border-dashed pb-[20px]">
+              <div className="mb-[30px] flex-shrink-0 border-b border-[#dddddd] pb-[20px]">
                 <div className="flex items-center justify-between mb-[10px]">
                   <span className="text-[20px] font-bold text-[#242424] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{bookingData.patientType} Patient</span>
                   <button onClick={onChangePatientType} className="text-[14px] font-semibold text-[#242424] underline tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Change</button>
@@ -428,8 +442,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       See Calendar
                     </button>
                     <div className="hidden lg:flex items-center gap-2">
-                      <button className="text-gray-400 hover:text-gray-600 text-lg">‹</button>
-                      <button className="text-gray-400 hover:text-gray-600 text-lg">›</button>
+                      <button onClick={() => navigateDay('prev')} className="text-gray-400 hover:text-gray-600 text-lg">‹</button>
+                      <button onClick={() => navigateDay('next')} className="text-gray-400 hover:text-gray-600 text-lg">›</button>
                     </div>
                   </div>
                 </div>
@@ -448,7 +462,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       }`}
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     >
-                      <div className="text-[16px] font-bold tracking-[-0.32px]">{button.day}</div>
+                      <div className={`text-[16px] tracking-[-0.32px] ${button.isSelected ? 'font-bold' : 'font-normal'}`}>{button.day}</div>
                       <div className="text-[16px] font-bold tracking-[-0.32px]">{String(button.date).padStart(2, '0')}</div>
                     </button>
                   ))}
@@ -564,8 +578,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
             {/* Calendar popup - Full width modal at bottom */}
             {showCalendar && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
-                <div className="w-full max-w-[1920px] h-[334px] bg-white rounded-t-2xl shadow-lg flex-shrink-0">
-                  <div className="p-4 h-full flex flex-col">
+                <div className="w-full max-w-[1920px] max-h-[90vh] bg-white rounded-t-2xl shadow-lg flex-shrink-0 overflow-y-auto">
+                  <div className="p-4 flex flex-col">
                     {/* Calendar header */}
                     <div className="flex items-center justify-center mb-3">
                       <div className="flex items-center gap-6">

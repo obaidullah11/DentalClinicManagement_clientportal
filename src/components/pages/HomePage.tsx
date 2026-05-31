@@ -28,7 +28,7 @@ const HomePage: React.FC<HomePageProps> = ({ onStartBooking }) => {
         
         <div className="w-full max-w-[1242px] px-4 lg:px-0 relative">
           {/* Logo overlapping the image */}
-          <div className="absolute top-[-68px]">
+          <div className="absolute top-[-68px] bg-white rounded-xl w-[126px] h-[126px] flex items-center justify-center overflow-hidden">
             <img
               src={showLogoImage ? logoUrl : "/images/cosmo-dental-logo-1.png"}
               alt="Cosmo Dental Logo"

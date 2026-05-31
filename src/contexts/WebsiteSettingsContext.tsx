@@ -94,13 +94,29 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
           };
           
           setSettings(mergedSettings);
-          
+
           // Update CSS variable for primary color dynamically
           if (result.data.website?.primary_color) {
             document.documentElement.style.setProperty('--primary-color', result.data.website.primary_color);
             // Cache the color to prevent flash on next page load
             localStorage.setItem('cachedPrimaryColor', result.data.website.primary_color);
             console.log('✅ Dynamic color loaded:', result.data.website.primary_color);
+          }
+
+          // Update browser tab title with clinic name
+          if (result.data.clinic?.clinic_name) {
+            document.title = result.data.clinic.clinic_name;
+          }
+
+          // Update favicon with clinic logo
+          if (result.data.website?.logo_url) {
+            let faviconLink = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+            if (!faviconLink) {
+              faviconLink = document.createElement('link');
+              faviconLink.rel = 'icon';
+              document.head.appendChild(faviconLink);
+            }
+            faviconLink.href = result.data.website.logo_url;
           }
         } else {
           throw new Error(result.message || 'Failed to load website settings');
