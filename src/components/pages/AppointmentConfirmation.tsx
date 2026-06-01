@@ -457,6 +457,29 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
       <Header />
       <div className="flex-1 w-full bg-white flex flex-col items-center justify-center py-[50px]">
         <div className="w-[880px] h-[620px] bg-white border border-[#d0d5dd] border-solid rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] relative">
+          <button
+            type="button"
+            onClick={onNext}
+            aria-label="Close and return to start page"
+            title="Close"
+            className="absolute right-[24px] top-[24px] z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#d0d5dd] bg-white text-[#667085] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] transition-colors hover:border-[#98a2b3] hover:bg-[#f9fafb] hover:text-[#242424] focus:outline-none focus:ring-2 focus:ring-cosmo-green focus:ring-offset-2"
+          >
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M15 5L5 15M5 5L15 15"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           
           <div className="absolute left-1/2 -translate-x-1/2 top-[27px] w-[61px] h-[61px] overflow-clip">
             <div className="absolute inset-[12.5%_12.5%_0.78%_12.5%]">
