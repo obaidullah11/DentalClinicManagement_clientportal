@@ -457,7 +457,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                         { key: 'aspirin', label: 'Aspirin' },
                         { key: 'others', label: 'Others' },
                       ] as { key: keyof typeof bookingData.medicalHistory.allergicItems, label: string }[]).map(({ key, label }) => (
-                        <label key={key} className="flex items-center gap-[6px] cursor-pointer">
+                        <label key={key} className="flex items-start gap-[6px] cursor-pointer">
                           <input
                             type="checkbox"
                             checked={bookingData.medicalHistory.allergicItems?.[key] || false}
@@ -465,7 +465,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                             className="sr-only peer"
                           />
                           <span className="w-[18px] h-[18px] flex-shrink-0 rounded-full border border-[#1e1e1e] peer-checked:bg-[#0a5add] peer-checked:border-[#0a5add]" />
-                          <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{label}</span>
+                          <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px] leading-[18px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{label}</span>
                         </label>
                       ))}
                     </div>
@@ -664,7 +664,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                         'Sinus Trouble', 'Heart Surgery', 'Heart Attack',
                         'Chest Pain', 'Thyroid Problems', 'Stroke', 'Other'
                       ].map((condition) => (
-                        <label key={condition} className="flex items-center gap-[6px] cursor-pointer">
+                        <label key={condition} className="flex items-start gap-[6px] cursor-pointer">
                           <input
                             type="checkbox"
                             checked={bookingData.medicalHistory.followingConditions?.includes(condition) || false}
@@ -672,7 +672,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                             className="sr-only peer"
                           />
                           <span className="w-[18px] h-[18px] flex-shrink-0 rounded-full border border-[#1e1e1e] peer-checked:bg-[#0a5add] peer-checked:border-[#0a5add]" />
-                          <span className="text-[13px] font-normal text-[#303030] leading-[normal]" style={{ fontFamily: 'Inter, sans-serif' }}>{condition}</span>
+                          <span className="text-[13px] font-normal text-[#303030] leading-[18px]" style={{ fontFamily: 'Inter, sans-serif' }}>{condition}</span>
                         </label>
                       ))}
                     </div>

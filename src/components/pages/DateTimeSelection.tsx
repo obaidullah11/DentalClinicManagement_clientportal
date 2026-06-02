@@ -499,7 +499,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                     {timeSlots.morning.length > 0 && (
                       <>
                         <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Morning</h3>
-                        <div className="grid grid-cols-3 gap-[9px] mb-[40px]">
+                        <div className="grid grid-cols-3 gap-[9px] lg:flex lg:flex-wrap lg:gap-[12px] mb-[40px]">
                           {timeSlots.morning.map((time) => (
                             <button
                               key={time}
@@ -507,7 +507,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                 updateBookingData('selectedTime', time);
                                 setError('');
                               }}
-                              className={`h-[47px] rounded-[10px] text-[14px] font-medium tracking-[-0.28px] transition-colors flex items-center justify-center ${
+                              className={`h-[47px] lg:h-[58px] lg:w-[128px] rounded-[10px] text-[14px] lg:text-[18px] font-medium tracking-[-0.28px] transition-colors flex items-center justify-center ${
                                 bookingData.selectedTime === time 
                                   ? 'bg-cosmo-green text-white' 
                                   : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
@@ -524,7 +524,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                     {timeSlots.afternoon.length > 0 && (
                       <>
                         <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Afternoon</h3>
-                        <div className="grid grid-cols-3 gap-[9px] mb-4">
+                        <div className="grid grid-cols-3 gap-[9px] lg:flex lg:flex-wrap lg:gap-[12px] mb-4">
                           {timeSlots.afternoon.map((time) => (
                             <button
                               key={time}
@@ -532,7 +532,7 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                                 updateBookingData('selectedTime', time);
                                 setError('');
                               }}
-                              className={`h-[47px] rounded-[10px] text-[14px] font-medium tracking-[-0.28px] transition-colors flex items-center justify-center ${
+                              className={`h-[47px] lg:h-[58px] lg:w-[128px] rounded-[10px] text-[14px] lg:text-[18px] font-medium tracking-[-0.28px] transition-colors flex items-center justify-center ${
                                 bookingData.selectedTime === time 
                                   ? 'bg-cosmo-green text-white' 
                                   : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
