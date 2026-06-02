@@ -325,8 +325,8 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     const selectedDateObj = new Date(selectedYear, selectedMonth, selectedDate);
     const buttons = [];
 
-    // Generate 5 days: selected day + 4 ahead
-    for (let i = 0; i <= 4; i++) {
+    // Generate 7 days: selected day + 6 ahead (web shows all 7, mobile shows first 5)
+    for (let i = 0; i <= 6; i++) {
       const buttonDate = new Date(selectedDateObj);
       buttonDate.setDate(selectedDate + i);
 
@@ -456,14 +456,14 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
               </div>
               
               <div className="mb-[40px] flex-shrink-0">
-                <div className="grid grid-cols-5 gap-[9px]">
+                <div className="flex gap-[9px] lg:gap-[12px]">
                   {generateDateButtons().map((button, index) => (
                     <button
                       key={index}
                       onClick={() => handleDateButtonClick(button.fullDate)}
-                      className={`h-[83px] rounded-[8px] text-center transition-colors flex flex-col items-center justify-center ${
-                        button.isSelected 
-                          ? 'bg-cosmo-green text-white' 
+                      className={`h-[83px] flex-1 lg:flex-none lg:w-[95px] rounded-[8px] text-center transition-colors flex-col items-center justify-center ${index >= 5 ? 'hidden lg:flex' : 'flex'} ${
+                        button.isSelected
+                          ? 'bg-cosmo-green text-white'
                           : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                       }`}
                       style={{ fontFamily: 'Manrope, sans-serif' }}
