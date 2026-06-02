@@ -81,6 +81,8 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
 
         const result = await response.json();
         
+        console.log('🔍 API Response:', result);
+        
         if (result.success && result.data) {
           // Merge website and clinic settings
           const mergedSettings = {
@@ -92,6 +94,10 @@ export const WebsiteSettingsProvider: React.FC<WebsiteSettingsProviderProps> = (
             clinic_email: result.data.clinic?.clinic_email,
             allow_online_booking: result.data.clinic?.allow_online_booking ?? false,
           };
+          
+          console.log('✅ Merged Settings:', mergedSettings);
+          console.log('📄 Terms and Conditions:', mergedSettings.terms_and_conditions);
+          console.log('🔒 Privacy Policy:', mergedSettings.privacy_policy);
           
           setSettings(mergedSettings);
 

@@ -26,6 +26,13 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
   const { settings } = useWebsiteSettings();
   const { showToast } = useToast();
 
+  // Debug: Log the settings to console
+  useEffect(() => {
+    console.log('MedicalHistory - Settings:', settings);
+    console.log('MedicalHistory - terms_and_conditions:', settings?.terms_and_conditions);
+    console.log('MedicalHistory - privacy_policy:', settings?.privacy_policy);
+  }, [settings]);
+
   // Hide the native browser scrollbar but keep the page scrollable (custom scrollbar drives it).
   useEffect(() => {
     const style = document.createElement('style');
