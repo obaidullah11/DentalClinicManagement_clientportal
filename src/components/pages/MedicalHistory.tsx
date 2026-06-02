@@ -281,8 +281,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                   value="Yes"
                   checked={bookingData.medicalHistory[field] === 'Yes'}
                   onChange={(e) => handleYesNoChange(field, e.target.value)}
-                  className={`w-[18px] h-[18px] ${errors[field] ? 'border-red-500' : 'text-cosmo-green focus:ring-cosmo-green'} border-[#e8e8e8]`}
+                  className="sr-only peer"
                 />
+                <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors[field] ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                 <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
               </label>
               <label className="flex items-center gap-[6px] cursor-pointer">
@@ -292,8 +293,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                   value="No"
                   checked={bookingData.medicalHistory[field] === 'No'}
                   onChange={(e) => handleYesNoChange(field, e.target.value)}
-                  className={`w-[18px] h-[18px] ${errors[field] ? 'border-red-500' : 'text-cosmo-green focus:ring-cosmo-green'} border-[#e8e8e8]`}
+                  className="sr-only peer"
                 />
+                <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors[field] ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                 <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
               </label>
             </div>
@@ -464,7 +466,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                             onChange={(e) => handleAllergicItemChange(key, e.target.checked)}
                             className="sr-only peer"
                           />
-                          <span className="w-[18px] h-[18px] flex-shrink-0 rounded-full border border-[#1e1e1e] peer-checked:bg-[#0a5add] peer-checked:border-[#0a5add]" />
+                          <span className="w-[18px] h-[18px] flex-shrink-0 rounded-full border border-[#1e1e1e] peer-checked:bg-cosmo-green peer-checked:border-cosmo-green" />
                           <span className="text-[14px] font-medium text-[#242424] tracking-[-0.28px] leading-[18px]" style={{ fontFamily: 'Manrope, sans-serif' }}>{label}</span>
                         </label>
                       ))}
@@ -517,8 +519,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="Yes"
                               checked={bookingData.medicalHistory.forWomenOnly?.pregnant === 'Yes'}
                               onChange={(e) => handleWomenOnlyChange('pregnant', e.target.value)}
-                              className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                              className="sr-only peer"
                             />
+                            <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors.forWomenOnly ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
                           </label>
                           <label className="flex items-center gap-[6px] cursor-pointer">
@@ -528,8 +531,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="No"
                               checked={bookingData.medicalHistory.forWomenOnly?.pregnant === 'No'}
                               onChange={(e) => handleWomenOnlyChange('pregnant', e.target.value)}
-                              className="w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]"
+                              className="sr-only peer"
                             />
+                            <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors.forWomenOnly ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
                           </label>
                         </div>
@@ -545,8 +549,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="Yes"
                               checked={bookingData.medicalHistory.forWomenOnly?.nursing === 'Yes'}
                               onChange={(e) => handleWomenOnlyChange('nursing', e.target.value)}
-                              className={`w-[18px] h-[18px] ${errors.forWomenOnly ? 'border-red-500' : 'text-cosmo-green focus:ring-cosmo-green'} border-[#e8e8e8]`}
+                              className="sr-only peer"
                             />
+                            <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors.forWomenOnly ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
                           </label>
                           <label className="flex items-center gap-[6px] cursor-pointer">
@@ -556,8 +561,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="No"
                               checked={bookingData.medicalHistory.forWomenOnly?.nursing === 'No'}
                               onChange={(e) => handleWomenOnlyChange('nursing', e.target.value)}
-                              className={`w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]`}
+                              className="sr-only peer"
                             />
+                            <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors.forWomenOnly ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
                           </label>
                         </div>
@@ -573,8 +579,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="Yes"
                               checked={bookingData.medicalHistory.forWomenOnly?.birthControl === 'Yes'}
                               onChange={(e) => handleWomenOnlyChange('birthControl', e.target.value)}
-                              className={`w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]`}
+                              className="sr-only peer"
                             />
+                            <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors.forWomenOnly ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Yes</span>
                           </label>
                           <label className="flex items-center gap-[6px] cursor-pointer">
@@ -584,8 +591,9 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                               value="No"
                               checked={bookingData.medicalHistory.forWomenOnly?.birthControl === 'No'}
                               onChange={(e) => handleWomenOnlyChange('birthControl', e.target.value)}
-                              className={`w-[18px] h-[18px] text-cosmo-green focus:ring-cosmo-green border-[#e8e8e8]`}
+                              className="sr-only peer"
                             />
+                            <span className={`w-[18px] h-[18px] flex-shrink-0 rounded-full border peer-checked:bg-cosmo-green peer-checked:border-cosmo-green ${errors.forWomenOnly ? 'border-red-500' : 'border-[#1e1e1e]'}`} />
                             <span className="text-[16px] font-medium text-[#242424] tracking-[-0.32px]" style={{ fontFamily: 'Manrope, sans-serif' }}>No</span>
                           </label>
                         </div>
@@ -671,7 +679,7 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                             onChange={(e) => handleConditionChange(condition, e.target.checked)}
                             className="sr-only peer"
                           />
-                          <span className="w-[18px] h-[18px] flex-shrink-0 rounded-full border border-[#1e1e1e] peer-checked:bg-[#0a5add] peer-checked:border-[#0a5add]" />
+                          <span className="w-[18px] h-[18px] flex-shrink-0 rounded-full border border-[#1e1e1e] peer-checked:bg-cosmo-green peer-checked:border-cosmo-green" />
                           <span className="text-[13px] font-normal text-[#303030] leading-[18px]" style={{ fontFamily: 'Inter, sans-serif' }}>{condition}</span>
                         </label>
                       ))}
