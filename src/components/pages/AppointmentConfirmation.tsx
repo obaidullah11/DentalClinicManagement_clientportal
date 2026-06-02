@@ -161,6 +161,18 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
       
       const formattedTime = formatTimeForAPI(bookingData.selectedTime);
 
+      // Format date of birth to Y-m-d format (YYYY-MM-DD) if provided
+      let formattedDateOfBirth: string | undefined = undefined;
+      if (bookingData.dateOfBirth) {
+        try {
+          formattedDateOfBirth = formatDateForAPI(bookingData.dateOfBirth);
+        } catch (error) {
+          console.error('Error formatting date of birth:', error);
+          // If formatting fails, leave it undefined
+          formattedDateOfBirth = undefined;
+        }
+      }
+
       return {
         patient: {
           patientType: (bookingData.patientType === 'New' || bookingData.patientType === 'Existing') 
@@ -175,7 +187,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           civilStatus: (inList(['Single', 'Married', 'Divorced', 'Widowed', 'Separated'], bookingData.civilStatus))
             ? bookingData.civilStatus as 'Single' | 'Married' | 'Divorced' | 'Widowed' | 'Separated'
             : 'Single',
-          dateOfBirth: bookingData.dateOfBirth || undefined,
+          dateOfBirth: formattedDateOfBirth,
           occupation: bookingData.occupation?.trim() || undefined,
           mobileNumber: formatMobileNumber(bookingData.mobileNumber.trim()),
           emailAddress: bookingData.emailAddress.trim(),
