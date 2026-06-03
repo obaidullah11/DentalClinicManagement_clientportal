@@ -127,6 +127,20 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
     }
   }, [clinicSettings, selectedDate, selectedMonth, selectedYear]);
 
+  // A slot is "past" when the selected date is today and its time is at or before now.
+  // Future dates keep every slot enabled; only future times are selectable today.
+  const isSlotInPast = (slot: string): boolean => {
+    const match = slot.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+    if (!match) return false;
+    let h = parseInt(match[1], 10);
+    const m = parseInt(match[2], 10);
+    const ampm = match[3].toUpperCase();
+    if (ampm === 'PM' && h !== 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    const slotDate = new Date(selectedYear, selectedMonth, selectedDate, h, m, 0, 0);
+    return slotDate.getTime() <= Date.now();
+  };
+
   const fetchClinicSettings = async () => {
     try {
       setIsLoadingSettings(true);
@@ -500,23 +514,30 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       <>
                         <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Morning</h3>
                         <div className="grid grid-cols-3 gap-[9px] lg:flex lg:flex-wrap lg:gap-[12px] mb-[40px]">
-                          {timeSlots.morning.map((time) => (
+                          {timeSlots.morning.map((time) => {
+                            const past = isSlotInPast(time);
+                            return (
                             <button
                               key={time}
+                              disabled={past}
                               onClick={() => {
+                                if (past) return;
                                 updateBookingData('selectedTime', time);
                                 setError('');
                               }}
                               className={`h-[47px] lg:h-[58px] lg:w-[128px] rounded-[10px] text-[14px] lg:text-[18px] font-medium tracking-[-0.28px] transition-colors flex items-center justify-center ${
-                                bookingData.selectedTime === time 
-                                  ? 'bg-cosmo-green text-white' 
-                                  : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
+                                past
+                                  ? 'bg-[#f3f3f3] text-[#c4c4c4] opacity-60 cursor-not-allowed'
+                                  : bookingData.selectedTime === time
+                                    ? 'bg-cosmo-green text-white'
+                                    : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                               }`}
                               style={{ fontFamily: 'Manrope, sans-serif' }}
                             >
                               {time}
                             </button>
-                          ))}
+                            );
+                          })}
                         </div>
                       </>
                     )}
@@ -525,23 +546,30 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
                       <>
                         <h3 className="text-[14px] font-normal text-[#9f9f9f] mb-[15px] tracking-[-0.28px]" style={{ fontFamily: 'Manrope, sans-serif' }}>Afternoon</h3>
                         <div className="grid grid-cols-3 gap-[9px] lg:flex lg:flex-wrap lg:gap-[12px] mb-4">
-                          {timeSlots.afternoon.map((time) => (
+                          {timeSlots.afternoon.map((time) => {
+                            const past = isSlotInPast(time);
+                            return (
                             <button
                               key={time}
+                              disabled={past}
                               onClick={() => {
+                                if (past) return;
                                 updateBookingData('selectedTime', time);
                                 setError('');
                               }}
                               className={`h-[47px] lg:h-[58px] lg:w-[128px] rounded-[10px] text-[14px] lg:text-[18px] font-medium tracking-[-0.28px] transition-colors flex items-center justify-center ${
-                                bookingData.selectedTime === time 
-                                  ? 'bg-cosmo-green text-white' 
-                                  : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
+                                past
+                                  ? 'bg-[#f3f3f3] text-[#c4c4c4] opacity-60 cursor-not-allowed'
+                                  : bookingData.selectedTime === time
+                                    ? 'bg-cosmo-green text-white'
+                                    : 'bg-[#f3f3f3] text-[#242424] hover:bg-gray-200'
                               }`}
                               style={{ fontFamily: 'Manrope, sans-serif' }}
                             >
                               {time}
                             </button>
-                          ))}
+                            );
+                          })}
                         </div>
                       </>
                     )}
