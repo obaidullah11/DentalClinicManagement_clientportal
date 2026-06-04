@@ -402,14 +402,26 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
     // Calendar dates
     for (let date = 1; date <= daysInMonth; date++) {
+      // Check if this date is in the past
+      const isPast = (() => {
+        const dateObj = new Date(currentYear, currentMonth, date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        dateObj.setHours(0, 0, 0, 0);
+        return dateObj < today;
+      })();
+      
       dates.push(
         <button 
           key={date}
-          onClick={() => handleDateSelect(date)}
+          onClick={() => !isPast && handleDateSelect(date)}
+          disabled={isPast}
           className={`text-center py-1 text-xs rounded-full w-7 h-7 mx-auto flex items-center justify-center transition-colors font-medium ${
-            date === selectedDate && currentMonth === selectedMonth && currentYear === selectedYear
-              ? 'bg-cosmo-green text-white' 
-              : 'text-gray-700 hover:bg-gray-100'
+            isPast
+              ? 'text-gray-300 cursor-not-allowed'
+              : date === selectedDate && currentMonth === selectedMonth && currentYear === selectedYear
+                ? 'bg-cosmo-green text-white' 
+                : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
           {date}
