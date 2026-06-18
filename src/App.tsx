@@ -18,13 +18,14 @@ const AppContent: React.FC = () => {
   const { settings, loading } = useWebsiteSettings();
   const { showToast } = useToast();
   
-  // Get current step from localStorage or default to 0
+  // Get current step from sessionStorage (per-tab, unlike localStorage which is
+  // shared across every tab of the same origin and would leak state between tabs)
   const getCurrentStepFromStorage = (): number => {
     try {
-      const saved = localStorage.getItem('bookingCurrentStep');
+      const saved = sessionStorage.getItem('bookingCurrentStep');
       return saved ? parseInt(saved, 10) : 0;
     } catch {
-      return 0; // Fallback to default if localStorage fails
+      return 0; // Fallback to default if sessionStorage fails
     }
   };
 
@@ -65,12 +66,12 @@ const AppContent: React.FC = () => {
     return prevStep < 0 ? 0 : prevStep;
   };
 
-  // Save currentStep to localStorage whenever it changes
+  // Save currentStep to sessionStorage (per-tab) whenever it changes
   useEffect(() => {
     try {
-      localStorage.setItem('bookingCurrentStep', currentStep.toString());
+      sessionStorage.setItem('bookingCurrentStep', currentStep.toString());
     } catch (error) {
-      console.warn('Failed to save currentStep to localStorage:', error);
+      console.warn('Failed to save currentStep to sessionStorage:', error);
     }
   }, [currentStep]);
 
@@ -192,12 +193,12 @@ const AppContent: React.FC = () => {
   // Reset booking data when starting a new appointment
   const resetBookingData = () => {
     setBookingKey(k => k + 1);
-    // Clear localStorage
+    // Clear sessionStorage
     try {
-      localStorage.removeItem('bookingData');
-      localStorage.removeItem('bookingCurrentStep');
+      sessionStorage.removeItem('bookingData');
+      sessionStorage.removeItem('bookingCurrentStep');
     } catch (error) {
-      console.warn('Failed to clear localStorage:', error);
+      console.warn('Failed to clear sessionStorage:', error);
     }
     
     // Get current date for default selectedDate
