@@ -179,7 +179,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.firstName) }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>}
-                    {errors.firstName && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.firstName}</span>}
+                    {errors.firstName && <span className="text-[13px] mt-1 block leading-tight" style={{ color: 'rgb(142,31,11)' }}>{errors.firstName}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <input 
@@ -190,7 +190,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
                       style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.middleName) }}
                     />
-                    {errors.middleName && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.middleName}</span>}
+                    {errors.middleName && <span className="text-[13px] mt-1 block leading-tight" style={{ color: 'rgb(142,31,11)' }}>{errors.middleName}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <input 
@@ -202,7 +202,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.lastName) }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>}
-                    {errors.lastName && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.lastName}</span>}
+                    {errors.lastName && <span className="text-[13px] mt-1 block leading-tight" style={{ color: 'rgb(142,31,11)' }}>{errors.lastName}</span>}
                   </div>
                 </div>
                 
@@ -226,7 +226,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       </div>
                     </div>
                     <span className="absolute top-[2px] right-[10px] text-red-500 text-xs z-10">*</span>
-                    {errors.gender && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.gender}</span>}
+                    {errors.gender && <span className="text-[13px] mt-1 block leading-tight" style={{ color: 'rgb(142,31,11)' }}>{errors.gender}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <div className="relative">
@@ -250,7 +250,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       </div>
                     </div>
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[10px] text-red-500 text-xs z-10">*</span>}
-                    {errors.civilStatus && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.civilStatus}</span>}
+                    {errors.civilStatus && <span className="text-[13px] mt-1 block leading-tight" style={{ color: 'rgb(142,31,11)' }}>{errors.civilStatus}</span>}
                   </div>
                 </div>
 
@@ -277,7 +277,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.dateOfBirth) }}
                     />
                     {bookingData.patientType === 'New' && <span className="absolute top-[2px] right-[30px] text-red-500 text-xs z-10">*</span>}
-                    {errors.dateOfBirth && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.dateOfBirth}</span>}
+                    {errors.dateOfBirth && <span className="text-[13px] mt-1 block leading-tight" style={{ color: 'rgb(142,31,11)' }}>{errors.dateOfBirth}</span>}
                   </div>
                   <div className="flex flex-col relative">
                     <input 
@@ -288,7 +288,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       className={`px-[20px] placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]`}
                       style={{ width: '100%', height: '55px', borderRadius: '8px', ...inputStyle(!!errors.occupation) }}
                     />
-                    {errors.occupation && <span className="text-[13px] mt-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>{errors.occupation}</span>}
+                    {errors.occupation && <span className="text-[13px] mt-1 block leading-tight" style={{ color: 'rgb(142,31,11)' }}>{errors.occupation}</span>}
                   </div>
                 </div>
                 
@@ -303,7 +303,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       style={{ fontFamily: 'Manrope, sans-serif', ...inputStyle(!!errors.mobileNumber) }}
                     />
                     <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>
-                    {errors.mobileNumber && <span className="text-[13px] mt-1 flex items-center gap-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>
+                    {errors.mobileNumber && <span className="text-[13px] mt-1 flex items-center gap-1 leading-tight" style={{ color: 'rgb(142,31,11)' }}>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       {errors.mobileNumber}
                     </span>}
@@ -319,7 +319,7 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                       style={{ fontFamily: 'Manrope, sans-serif', ...inputStyle(!!errors.emailAddress) }}
                     />
                     <span className="absolute top-[2px] right-[10px] text-red-500 text-xs">*</span>
-                    {errors.emailAddress && <span className="text-[13px] mt-1 flex items-center gap-1 absolute -bottom-5 left-0" style={{ color: 'rgb(142,31,11)' }}>
+                    {errors.emailAddress && <span className="text-[13px] mt-1 flex items-center gap-1 leading-tight" style={{ color: 'rgb(142,31,11)' }}>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                       {errors.emailAddress}
                     </span>}

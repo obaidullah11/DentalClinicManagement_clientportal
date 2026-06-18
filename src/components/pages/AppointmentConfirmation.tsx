@@ -467,14 +467,14 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
   return (
     <div className="min-h-screen bg-white font-sans flex flex-col">
       <Header />
-      <div className="flex-1 w-full bg-white flex flex-col items-center justify-center py-[50px]">
-        <div className="w-[880px] h-[620px] bg-white border border-[#d0d5dd] border-solid rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] relative">
+      <div className="flex-1 w-full bg-white flex flex-col items-center justify-center px-4 py-[50px]">
+        <div className="relative w-full max-w-[880px] bg-white border border-[#d0d5dd] border-solid rounded-[10px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] px-5 sm:px-8 lg:px-12 pt-7 pb-10">
           <button
             type="button"
             onClick={onNext}
             aria-label="Close and return to start page"
             title="Close"
-            className="absolute right-[24px] top-[24px] z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#d0d5dd] bg-white text-[#667085] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] transition-colors hover:border-[#98a2b3] hover:bg-[#f9fafb] hover:text-[#242424] focus:outline-none focus:ring-2 focus:ring-cosmo-green focus:ring-offset-2"
+            className="absolute right-4 top-4 sm:right-6 sm:top-6 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#d0d5dd] bg-white text-[#667085] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] transition-colors hover:border-[#98a2b3] hover:bg-[#f9fafb] hover:text-[#242424] focus:outline-none focus:ring-2 focus:ring-cosmo-green focus:ring-offset-2"
           >
             <svg
               className="h-5 w-5"
@@ -492,80 +492,64 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
               />
             </svg>
           </button>
-          
-          <div className="absolute left-1/2 -translate-x-1/2 top-[27px] w-[61px] h-[61px] overflow-clip">
-            <div className="absolute inset-[12.5%_12.5%_0.78%_12.5%]">
-              <svg className="absolute block w-full h-full text-cosmo-green" preserveAspectRatio="none" overflow="visible" viewBox="0 0 45.75 52.9019" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M45.75 22.875V40.6667C45.75 42.0149 45.2144 43.3078 44.2611 44.2611C43.3078 45.2144 42.0149 45.75 40.6667 45.75H5.08333C3.73515 45.75 2.44218 45.2144 1.48887 44.2611C0.535564 43.3078 0 42.0149 0 40.6667V22.875H45.75ZM33.0417 0C33.7158 0 34.3622 0.267782 34.8389 0.744437C35.3156 1.22109 35.5833 1.86757 35.5833 2.54167V5.08333H40.6667C42.0149 5.08333 43.3078 5.6189 44.2611 6.57221C45.2144 7.52552 45.75 8.81848 45.75 10.1667V17.7917H0V10.1667C0 8.81848 0.535564 7.52552 1.48887 6.57221C2.44218 5.6189 3.73515 5.08333 5.08333 5.08333H10.1667V2.54167C10.1667 1.86757 10.4344 1.22109 10.9111 0.744437C11.3878 0.267782 12.0342 0 12.7083 0C13.3824 0 14.0289 0.267782 14.5056 0.744437C14.9822 1.22109 15.25 1.86757 15.25 2.54167V5.08333H30.5V2.54167C30.5 1.86757 30.7678 1.22109 31.2444 0.744437C31.7211 0.267782 32.3676 0 33.0417 0Z"/>
-              </svg>
-            </div>
-          </div>
-          
-          <div className="absolute left-1/2 -translate-x-1/2 top-[117px] text-center whitespace-nowrap">
-            <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0 not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
-              <span className="leading-[normal]">Hi </span>
-              <span className="font-semibold leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>{bookingData.firstName || 'Timothy'}</span>
-              <span className="leading-[normal]">, we've successfully</span>
-            </p>
-            <p className="text-[18px] font-normal text-[#242424] leading-[normal] m-0" style={{ fontFamily: 'Inter, sans-serif' }}>
-              <span className="leading-[normal]">received your request for an appointment</span>
-              <span className="leading-[normal]">!</span>
-            </p>
+
+          {/* Calendar icon */}
+          <div className="flex justify-center mb-6">
+            <svg className="block w-[54px] h-[54px] text-cosmo-green" viewBox="0 0 45.75 52.9019" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M45.75 22.875V40.6667C45.75 42.0149 45.2144 43.3078 44.2611 44.2611C43.3078 45.2144 42.0149 45.75 40.6667 45.75H5.08333C3.73515 45.75 2.44218 45.2144 1.48887 44.2611C0.535564 43.3078 0 42.0149 0 40.6667V22.875H45.75ZM33.0417 0C33.7158 0 34.3622 0.267782 34.8389 0.744437C35.3156 1.22109 35.5833 1.86757 35.5833 2.54167V5.08333H40.6667C42.0149 5.08333 43.3078 5.6189 44.2611 6.57221C45.2144 7.52552 45.75 8.81848 45.75 10.1667V17.7917H0V10.1667C0 8.81848 0.535564 7.52552 1.48887 6.57221C2.44218 5.6189 3.73515 5.08333 5.08333 5.08333H10.1667V2.54167C10.1667 1.86757 10.4344 1.22109 10.9111 0.744437C11.3878 0.267782 12.0342 0 12.7083 0C13.3824 0 14.0289 0.267782 14.5056 0.744437C14.9822 1.22109 15.25 1.86757 15.25 2.54167V5.08333H30.5V2.54167C30.5 1.86757 30.7678 1.22109 31.2444 0.744437C31.7211 0.267782 32.3676 0 33.0417 0Z"/>
+            </svg>
           </div>
 
+          {/* Greeting */}
+          <p className="text-center text-[16px] sm:text-[18px] font-normal text-[#242424] leading-snug m-0 mb-8 px-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Hi <span className="font-semibold">{bookingData.firstName || 'Timothy'}</span>, we've successfully received your request for an appointment!
+          </p>
 
           {/* Inner box */}
-          <div className="absolute left-[142px] top-[211px] w-[595px] h-[248px] bg-white border border-[#d0d5dd] border-solid rounded-[8px]" />
+          <div className="border border-[#d0d5dd] border-solid rounded-[8px] p-5 sm:p-6 mb-8 flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div className="flex-1 flex flex-col gap-[6px] min-w-0">
+              <p className="m-0 text-[#242424] text-[18px] sm:text-[20px] font-bold leading-[normal] tracking-[-0.4px] break-words" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                {bookingData.lastName || 'Miller'}, {bookingData.firstName || 'Timothy'}
+              </p>
+              <p className="m-0 text-[#242424] text-[18px] sm:text-[20px] font-medium leading-[normal] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                {calculateAge(bookingData.dateOfBirth) || '34'} yrs. old - {bookingData.gender || 'Male'}
+              </p>
+              <p className="m-0 text-[#242424] text-[18px] sm:text-[20px] font-medium leading-[normal] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                {bookingData.patientType || 'New'} Patient
+              </p>
+              <p className="m-0 text-cosmo-green text-[16px] font-semibold leading-[normal] tracking-[-0.32px] break-words" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                {bookingData.reason || 'Consultation'}
+              </p>
+            </div>
 
-          {/* Patient Details inside inner box (left part) */}
-          <p className="absolute left-[165px] top-[229px] m-0 text-[#242424] text-[20px] font-bold leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            {bookingData.lastName || 'Miller'}, {bookingData.firstName || 'Timothy'}
-          </p>
-          <p className="absolute left-[165px] top-[263px] m-0 text-[#242424] text-[20px] font-medium leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            {calculateAge(bookingData.dateOfBirth) || '34'} yrs. old - {bookingData.gender || 'Male'}
-          </p>
-          <p className="absolute left-[165px] top-[297px] m-0 text-[#242424] text-[20px] font-medium leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            {bookingData.patientType || 'New'} Patient
-          </p>
-          <p className="absolute left-[165px] top-[332px] m-0 text-cosmo-green text-[16px] font-semibold leading-[normal] tracking-[-0.32px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            {bookingData.reason || 'Consultation'}
-          </p>
-          <p className="absolute left-[165px] top-[366px] m-0 text-[#242424] text-[20px] font-bold leading-[normal] tracking-[-0.4px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            {bookingData.selectedDate || 'Today, Oct 02'}
-          </p>
+            {/* Separator */}
+            <div className="hidden sm:block w-px self-stretch bg-[#d0d5dd]" />
+            <div className="block sm:hidden h-px w-full bg-[#d0d5dd]" />
 
-          <div className="absolute left-[165px] top-[402px] overflow-clip w-[18px] h-[18px]">
-             <div className="absolute inset-[8.33%]">
-                <div className="absolute inset-[-5%]">
-                   <img src="/images/clock-4_new.svg" alt="" className="block max-w-none w-full h-full" />
-                </div>
-             </div>
-          </div>
-          <p className="absolute left-[190px] top-[401px] m-0 text-[#242424] text-[15px] font-medium leading-[normal] tracking-[-0.3px] whitespace-nowrap" style={{ fontFamily: 'Manrope, sans-serif' }}>
-             {bookingData.selectedTime || '12:00 PM'}
-          </p>
-
-          {/* Vertical Separator line inside inner box */}
-          <div className="absolute left-[471px] top-[230px] flex items-center justify-center w-0 h-[209px]">
-             <div className="flex-none rotate-90">
-                <div className="relative w-[209px] h-0">
-                   <div className="absolute inset-[-1px_0_0_0]">
-                      <img src="/images/line_1120.svg" alt="" className="block max-w-none w-full h-full" />
-                   </div>
-                </div>
-             </div>
+            <div className="flex-1 flex flex-col gap-[8px] min-w-0">
+              <p className="m-0 text-[#242424] text-[18px] sm:text-[20px] font-bold leading-[normal] tracking-[-0.4px] break-words" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                {bookingData.selectedDate || 'Today, Oct 02'}
+              </p>
+              <div className="flex items-center gap-2">
+                <img src="/images/clock-4_new.svg" alt="" className="block w-[18px] h-[18px]" />
+                <span className="text-[#242424] text-[15px] font-medium leading-[normal] tracking-[-0.3px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
+                  {bookingData.selectedTime || '12:00 PM'}
+                </span>
+              </div>
+            </div>
           </div>
 
-
-          <p className="absolute left-1/2 -translate-x-1/2 top-[495px] m-0 w-[400px] h-[43px] text-center text-[#242424] text-[16px] font-medium leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Please be informed that this is NOT YET A CONFIRMED APPOINTMENT. 
-          </p>
-          <p className="absolute left-1/2 -translate-x-1/2 top-[545px] m-0 w-[348px] h-[42px] text-center text-[#242424] text-[16px] font-normal leading-[normal] not-italic" style={{ fontFamily: 'Inter, sans-serif' }}>
-            A clinic representative will contact you to finalize your visit schedule.
-          </p>
-
+          {/* Disclaimer */}
+          <div className="text-center px-2">
+            <p className="m-0 mb-3 text-[#242424] text-[15px] sm:text-[16px] font-medium leading-snug" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Please be informed that this is NOT YET A CONFIRMED APPOINTMENT.
+            </p>
+            <p className="m-0 text-[#242424] text-[15px] sm:text-[16px] font-normal leading-snug" style={{ fontFamily: 'Inter, sans-serif' }}>
+              A clinic representative will contact you to finalize your visit schedule.
+            </p>
+          </div>
         </div>
-        
+
       </div>
     </div>
   );
