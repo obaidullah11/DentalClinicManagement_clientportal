@@ -35,8 +35,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
       newErrors.firstName = 'First Name is required';
     } else if (bookingData.firstName.length > 100) {
       newErrors.firstName = 'First Name must not exceed 100 characters';
-    } else if (!/^[a-zA-Z0-9\s]+$/.test(bookingData.firstName)) {
-      newErrors.firstName = 'First Name can only contain letters, numbers, and spaces';
+    } else if (!/^[a-zA-Z\s]+$/.test(bookingData.firstName)) {
+      newErrors.firstName = 'First Name can only contain letters and spaces';
     }
 
     // Last Name validation
@@ -44,16 +44,16 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
       newErrors.lastName = 'Last Name is required';
     } else if (bookingData.lastName.length > 100) {
       newErrors.lastName = 'Last Name must not exceed 100 characters';
-    } else if (!/^[a-zA-Z0-9\s]+$/.test(bookingData.lastName)) {
-      newErrors.lastName = 'Last Name can only contain letters, numbers, and spaces';
+    } else if (!/^[a-zA-Z\s]+$/.test(bookingData.lastName)) {
+      newErrors.lastName = 'Last Name can only contain letters and spaces';
     }
 
     // Middle Name validation (optional but must follow rules if provided)
     if (bookingData.middleName && bookingData.middleName.trim()) {
       if (bookingData.middleName.length > 100) {
         newErrors.middleName = 'Middle Name must not exceed 100 characters';
-      } else if (!/^[a-zA-Z0-9\s]+$/.test(bookingData.middleName)) {
-        newErrors.middleName = 'Middle Name can only contain letters, numbers, and spaces';
+      } else if (!/^[a-zA-Z\s]+$/.test(bookingData.middleName)) {
+        newErrors.middleName = 'Middle Name can only contain letters and spaces';
       }
     }
 
@@ -63,8 +63,8 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
     } else {
       // Remove all non-digit characters except leading +
       const normalized = bookingData.mobileNumber.replace(/[^0-9+]/g, '');
-      // Check if it matches the required format: +[country code][10-15 digits]
-      if (!/^\+[0-9]{10,15}$/.test(normalized)) {
+      // p73: must not exceed 13 chars total (+ and up to 12 digits, e.g. +639171234567).
+      if (!/^\+[0-9]{10,12}$/.test(normalized)) {
         newErrors.mobileNumber = 'Invalid format. Use +639171234567';
       }
     }
@@ -296,9 +296,10 @@ const PatientDetailsForm: React.FC<PatientDetailsFormProps> = ({
                   <div className="flex flex-col relative">
                     <input 
                       type="text" 
-                      placeholder="Mobile Number" 
-                      value={bookingData.mobileNumber} 
-                      onChange={(e) => updateBookingData('mobileNumber', e.target.value)} 
+                      placeholder="Mobile Number"
+                      value={bookingData.mobileNumber}
+                      onChange={(e) => updateBookingData('mobileNumber', e.target.value)}
+                      maxLength={13}
                       className="px-[20px] py-[16px] rounded-[8px] text-[16px] h-[55px] font-medium placeholder:text-[#9f9f9f] focus:outline-none focus:border-cosmo-green tracking-[-0.32px]"
                       style={{ fontFamily: 'Manrope, sans-serif', ...inputStyle(!!errors.mobileNumber) }}
                     />

@@ -289,10 +289,12 @@ const DateTimeSelection: React.FC<DateTimeSelectionProps> = ({
 
   const navigateDay = (direction: 'prev' | 'next') => {
     const current = new Date(selectedYear, selectedMonth, selectedDate);
-    current.setDate(current.getDate() + (direction === 'next' ? 1 : -1));
+    // p72: the Back/Next arrows move the visible date strip a full week (7 days) at a time.
+    current.setDate(current.getDate() + (direction === 'next' ? 7 : -7));
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (current < today) return;
+    // Never go before today — clamp to today so the strip always starts at/after the current day.
+    if (current < today) current.setTime(today.getTime());
     setSelectedDate(current.getDate());
     setSelectedMonth(current.getMonth());
     setSelectedYear(current.getFullYear());

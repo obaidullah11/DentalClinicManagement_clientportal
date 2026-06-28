@@ -509,7 +509,7 @@ const AppointmentConfirmation: React.FC<AppointmentConfirmationProps> = ({ booki
           <div className="border border-[#d0d5dd] border-solid rounded-[8px] p-5 sm:p-6 mb-8 flex flex-col sm:flex-row gap-4 sm:gap-6">
             <div className="flex-1 flex flex-col gap-[6px] min-w-0">
               <p className="m-0 text-[#242424] text-[18px] sm:text-[20px] font-bold leading-[normal] tracking-[-0.4px] break-words" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                {bookingData.lastName || 'Miller'}, {bookingData.firstName || 'Timothy'}
+                {bookingData.firstName || 'Timothy'}{bookingData.middleName ? ` ${bookingData.middleName.charAt(0)}.` : ''} {bookingData.lastName || 'Miller'}
               </p>
               <p className="m-0 text-[#242424] text-[18px] sm:text-[20px] font-medium leading-[normal] tracking-[-0.4px]" style={{ fontFamily: 'Manrope, sans-serif' }}>
                 {calculateAge(bookingData.dateOfBirth) || '34'} yrs. old - {bookingData.gender || 'Male'}

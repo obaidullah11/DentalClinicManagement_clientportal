@@ -36,6 +36,8 @@ const AppContent: React.FC = () => {
   // Check if a step is hidden
   const isStepHidden = (step: number): boolean => {
     if (step === 2 && bookingData.patientType === 'Existing') return true;
+    // p157: the Medical History page (step 5) is only for new patients — skip it for Existing.
+    if (step === 5 && bookingData.patientType === 'Existing') return true;
     return settings?.hidden_steps?.includes(step) || false;
   };
 

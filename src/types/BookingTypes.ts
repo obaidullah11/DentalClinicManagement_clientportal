@@ -22,6 +22,7 @@ export interface MedicalHistory {
   medicalTreatment: string;
   medicalCondition: string;
   services: string;
+  servicesDetails?: string; // p74: Q3 follow-up ("what illness or operation?") — separate from the Yes/No radio
   hospitalized: string;
   hospitalizedWhy: string;
   prescriptionMedication: string;

@@ -380,8 +380,8 @@ const MedicalHistoryComponent: React.FC<MedicalHistoryProps> = ({
                     <input
                       type="text"
                       placeholder="State your answer here..."
-                      value={bookingData.medicalHistory.services || ''}
-                      onChange={(e) => handleTextChange('services', e.target.value)}
+                      value={bookingData.medicalHistory.servicesDetails || ''}
+                      onChange={(e) => handleTextChange('servicesDetails', e.target.value)}
                       className="w-full px-[20px] py-[16px] border border-[#e8e8e8] rounded-[8px] text-[14px] h-[55px] font-medium focus:outline-none focus:border-cosmo-green placeholder:text-[#9f9f9f] tracking-[-0.28px]"
                       style={{ fontFamily: 'Manrope, sans-serif' }}
                     />
